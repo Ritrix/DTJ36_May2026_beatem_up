@@ -1,4 +1,6 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 
 public class enemyBehaviour : MonoBehaviour
@@ -7,6 +9,9 @@ public class enemyBehaviour : MonoBehaviour
     public GameObject playerPosition;
     public GameObject enemyObject;
     [SerializeField] private bool facingRight = true;
+    [SerializeField] private float minYOffset = -2f;
+    [SerializeField] private float maxYOffset = +2f;
+    private float targetYOffset;
 
     [Header("Detection")]
     [SerializeField] private float detectionRange = 2f;
@@ -31,7 +36,8 @@ public class enemyBehaviour : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        //get random y offset 
+        targetYOffset = Random.Range(minYOffset, maxYOffset);
     }
 
     // Update is called once per frame
@@ -40,6 +46,10 @@ public class enemyBehaviour : MonoBehaviour
         facePlayer();
 
         cooldownTimer += Time.deltaTime;
+
+
+
+        Debug.Log(playerPosition);
 
         //enemy movement towards player
         if (PlayerInSight())
@@ -55,6 +65,19 @@ public class enemyBehaviour : MonoBehaviour
                 enemySpeed * Time.deltaTime
             );
         }
+
+        //match player approx y co-ord with offset for variety
+        Vector3 pos = enemyObject.transform.position;
+
+        float targetY = playerPosition.transform.position.y + targetYOffset;
+
+        pos.y = Mathf.MoveTowards(
+            pos.y,
+            targetY,
+            enemySpeed * Time.deltaTime
+        );
+
+        enemyObject.transform.position = pos;
     }
 
     private void facePlayer() //faces sprite towards player onx axis
