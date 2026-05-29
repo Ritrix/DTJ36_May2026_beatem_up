@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 986549adfe006554193237fd72b113f5, type: 3}
+  m_Name: Heavy_Neutral
+  m_EditorClassIdentifier: Assembly-CSharp::AttackData
+  strength: 1
+  direction: 0
+  damage: 17
+  attackDuration: 0.35
+  hitboxStartTime: 0.12
+  hitboxEndTime: 0.25
+  hitboxOffset: {x: 1.5, y: 0}
+  hitboxSize: {x: 3, y: 0.5}
+  animationName: 

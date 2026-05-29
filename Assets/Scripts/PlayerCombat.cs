@@ -29,6 +29,15 @@ public class PlayerCombat : MonoBehaviour
     private bool hitboxActive;
     private bool canCancel;
     private bool isHurt;
+    private int comboHitCount;
+    private bool hitboxHasActivated;
+
+    [Header("Debug")]
+    [SerializeField] private bool drawHitboxes = true;
+
+    private Vector2 lastHitboxCenter;
+    private Vector2 lastHitboxSize;
+    private float hitboxDrawTimer;
 
     private float attackTimer;
     private float comboTimer; 
@@ -73,6 +82,11 @@ public class PlayerCombat : MonoBehaviour
         HandleDirectionBuffer();
         HandleAttackTimer();
         HandleComboTimer();
+
+        if (hitboxDrawTimer > 0f)
+        {
+            hitboxDrawTimer -= Time.deltaTime;
+        }
     }
 
     private void HandleDirectionBuffer()
@@ -109,7 +123,18 @@ public class PlayerCombat : MonoBehaviour
             ? bufferedDirection
             : moveInput;
 
+        Debug.Log(
+            $"ATTACK INPUT DEBUG\n" +
+            $"Strength: {strength}\n" +
+            $"moveInput: {moveInput}\n" +
+            $"bufferedDirection: {bufferedDirection}\n" +
+            $"directionBufferTimer: {directionBufferTimer}\n" +
+            $"Using Buffered: {directionBufferTimer > 0f}"
+        );
+
         AttackDirection direction = GetAttackDirection(attackInput);
+
+        Debug.Log($"Chosen Attack Direction: {direction}");
 
         AttackData nextAttack = GetAttackData(strength, direction);
 
@@ -133,21 +158,36 @@ public class PlayerCombat : MonoBehaviour
 
     private void StartAttack(AttackData attack)
     {
+        bool wasInterrupted = isAttacking;
+
+        movement.SetMovementLocked(true);
+
         currentAttackData = attack;
 
         isAttacking = true;
         hitboxActive = false;
+        hitboxHasActivated = false;
         canCancel = false;
 
         attackTimer = 0f;
         comboTimer = comboResetTime;
 
-        usedAttacksThisCombo.Add(attack.name);
+        string attackKey = $"{attack.strength}_{attack.direction}";
+        usedAttacksThisCombo.Add(attackKey);
 
-        Debug.Log($"Started attack: {attack.name}");
-
-        // Later:
-        // animator.Play(attack.animationName);
+        Debug.Log(
+            $"ATTACK STARTED\n" +
+            $"Name: {attack.name}\n" +
+            $"Strength: {attack.strength}\n" +
+            $"Direction: {attack.direction}\n" +
+            $"Damage: {attack.damage}\n" +
+            $"Duration: {attack.attackDuration}\n" +
+            $"Hitbox Start: {attack.hitboxStartTime}\n" +
+            $"Hitbox End: {attack.hitboxEndTime}\n" +
+            $"Hitbox Offset: {attack.hitboxOffset}\n" +
+            $"Hitbox Size: {attack.hitboxSize}\n" +
+            $"Interrupted Previous Move: {wasInterrupted}"
+        );
     }
 
     private void HandleAttackTimer()
@@ -156,7 +196,7 @@ public class PlayerCombat : MonoBehaviour
 
         attackTimer += Time.deltaTime;
 
-        if (!hitboxActive && attackTimer >= currentAttackData.hitboxStartTime)
+        if (!hitboxHasActivated && attackTimer >= currentAttackData.hitboxStartTime)
         {
             ActivateHitbox();
         }
@@ -174,12 +214,31 @@ public class PlayerCombat : MonoBehaviour
 
     private void ActivateHitbox()
     {
+        hitboxHasActivated = true;
         hitboxActive = true;
         canCancel = true;
 
-        Debug.Log("Hitbox active");
+        lastHitboxCenter = GetHitboxCenter(currentAttackData);
+        lastHitboxSize = currentAttackData.hitboxSize;
+        hitboxDrawTimer = currentAttackData.hitboxEndTime - currentAttackData.hitboxStartTime;
+
+
+
+        Debug.Log(
+            $"HITBOX ACTIVE\n" +
+            $"Attack: {currentAttackData.name}\n" +
+            $"Can Cancel: {canCancel}"
+        );
 
         CheckHits();
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!drawHitboxes) return;
+        if (hitboxDrawTimer <= 0f) return;
+
+        Gizmos.DrawWireCube(lastHitboxCenter, lastHitboxSize);
     }
 
     private void DeactivateHitbox()
@@ -191,6 +250,10 @@ public class PlayerCombat : MonoBehaviour
 
     private void EndAttack()
     {
+        if (movement != null)
+        {
+            movement.SetMovementLocked(false);
+        }
         isAttacking = false;
         hitboxActive = false;
         canCancel = false;
@@ -214,6 +277,7 @@ public class PlayerCombat : MonoBehaviour
     {
         usedAttacksThisCombo.Clear();
         comboTimer = 0f;
+        comboHitCount = 0;
 
         Debug.Log("Combo reset");
     }
@@ -234,7 +298,7 @@ public class PlayerCombat : MonoBehaviour
 
     private Vector2 GetHitboxCenter(AttackData attack)
     {
-        float facingMultiplier = transform.localScale.x >= 0 ? 1f : -1f;
+        float facingMultiplier = movement.FacingDirection();
 
         Vector2 offset = attack.hitboxOffset;
         offset.x *= facingMultiplier;
@@ -255,23 +319,42 @@ public class PlayerCombat : MonoBehaviour
             enemyLayer
         );
 
+        if (hits.Length == 0)
+        {
+            Debug.Log($"Attack missed: {currentAttackData.name}");
+            return;
+        }
+
         foreach (Collider2D hit in hits)
         {
             Vector2 hitPosition = hit.ClosestPoint(hitboxCenter);
 
+            comboHitCount++;
+
             Debug.Log(
-                $"Hit {hit.name} with {currentAttackData.name} " +
-                $"for {currentAttackData.damage} damage at {hitPosition}"
+                $"Hit detected!\n" +
+                $"Attack: {currentAttackData.name}\n" +
+                $"Damage: {currentAttackData.damage}\n" +
+                $"Hitbox Center: {hitboxCenter}\n" +
+                $"Hit Position: {hitPosition}\n" +
+                $"Combo Hits: {comboHitCount}"
             );
 
-            // Later:
-            // EnemyHealth enemy = hit.GetComponent<EnemyHealth>();
-            // enemy.TakeHit(currentAttackData.damage, hitPosition);
+            DummyEnemy dummy = hit.GetComponent<DummyEnemy>();
+
+            if (dummy != null)
+            {
+                dummy.TakeHit(currentAttackData, hitPosition, comboHitCount);
+            }
         }
     }
 
     public void SetHurt(float duration)
     {
+        if (movement != null)
+        {
+            movement.SetMovementLocked(false);
+        }
         isHurt = true;
         isAttacking = false;
         hitboxActive = false;

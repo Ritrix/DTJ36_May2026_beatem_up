@@ -14,6 +14,17 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     public bool FacingRight { get; private set; } = true;
+    public bool MovementLocked { get; private set; }
+
+    public void SetMovementLocked(bool locked)
+    {
+        MovementLocked = locked;
+
+        if (locked)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
@@ -24,6 +35,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (MovementLocked)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         rb.linearVelocity = moveInput * moveSpeed;
     }
 

@@ -743,8 +743,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
-  attacks: []
+    m_Bits: 64
+  attacks:
+  - {fileID: 11400000, guid: 427c02e67d460144f883c29d4009bcae, type: 2}
+  - {fileID: 11400000, guid: 089ef75099f857647adf300dca1a5647, type: 2}
+  - {fileID: 11400000, guid: 69d306b24c7240c4ca3b20130a63056a, type: 2}
+  - {fileID: 11400000, guid: e839d656e65329e4892e477a3f2b22b8, type: 2}
+  - {fileID: 11400000, guid: 87d4f9b45f0e5994ca84a6a18e89c13c, type: 2}
+  - {fileID: 11400000, guid: e3c2738c50b3d1443a6dae2cb352dd5a, type: 2}
+  - {fileID: 11400000, guid: 55288d9cd5f57034ca272ee7912823e8, type: 2}
+  - {fileID: 11400000, guid: cb6db88e3eeecd2469075142d70f09a7, type: 2}
   comboResetTime: 0.8
   debugAttackData: {fileID: 0}
   directionBufferTime: 0.15
