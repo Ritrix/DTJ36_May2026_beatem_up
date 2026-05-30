@@ -407,6 +407,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
   m_PrefabInstance: {fileID: 1471290317}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1407862021
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1407862023}
+  - component: {fileID: 1407862022}
+  m_Layer: 0
+  m_Name: TempGameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1407862022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407862021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b31d67eacbde57442b46b37eec82f582, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  combatSceneName: SurvivalMode
+  shopSceneName: shopScene
+--- !u!4 &1407862023
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407862021}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.79911, y: -1.03766, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1435588434
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,10 +572,6 @@ PrefabInstance:
     - target: {fileID: 6979821183098404218, guid: 71bface715db30a41acf039239acb578, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 6979821183098404218, guid: 71bface715db30a41acf039239acb578, type: 3}
-      propertyPath: m_Layer
-      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -702,3 +744,4 @@ SceneRoots:
   - {fileID: 509018889}
   - {fileID: 1045439899}
   - {fileID: 873638266}
+  - {fileID: 1407862023}

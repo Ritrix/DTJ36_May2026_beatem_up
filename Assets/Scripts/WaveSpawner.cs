@@ -36,6 +36,8 @@ public class WaveSpawner : MonoBehaviour
     private bool isSpawning;
     private bool waveEnding;
 
+    private bool waveStarted;
+
     private void Start()
     {
         StartCoroutine(SpawnWave());
@@ -43,7 +45,11 @@ public class WaveSpawner : MonoBehaviour
 
     private IEnumerator SpawnWave()
     {
+        waveStarted = false;
+
         yield return new WaitForSeconds(startDelay);
+
+        waveStarted = true;
 
         int wave = GameManager.Instance != null
             ? GameManager.Instance.CurrentWave
@@ -81,6 +87,7 @@ public class WaveSpawner : MonoBehaviour
 
     private void Update()
     {
+        if (!waveStarted) return;
         if (waveEnding) return;
         if (isSpawning) return;
         if (enemiesDefeated < enemiesToSpawn) return;

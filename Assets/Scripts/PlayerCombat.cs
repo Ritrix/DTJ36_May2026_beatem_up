@@ -12,6 +12,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private AttackData[] attacks;
     [SerializeField] private float comboResetTime = 0.8f;
     [SerializeField] private AttackData debugAttackData;
+    
 
     [Header("Input Buffer")]
     [SerializeField] private float directionBufferTime = 0.15f;
@@ -45,9 +46,13 @@ public class PlayerCombat : MonoBehaviour
     private AttackId currentAttack;
     private readonly HashSet<string> usedAttacksThisCombo = new();
 
+    [Header("Animation")]
+    private Animator animator;
+
     private void Awake()
     {
         movement = GetComponent<PlayerMovement>();
+        animator = GetComponent<Animator>();
     }
 
 
@@ -147,7 +152,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void StartAttack(AttackData attack)
     {
-        bool wasInterrupted = isAttacking;
+        //bool wasInterrupted = isAttacking;
 
         movement.SetMovementLocked(true);
 
@@ -163,6 +168,16 @@ public class PlayerCombat : MonoBehaviour
 
         string attackKey = $"{attack.strength}_{attack.direction}";
         usedAttacksThisCombo.Add(attackKey);
+
+        PlayAnimationState(attack.windUpAnimationState);
+    }
+
+    private void PlayAnimationState(string stateName)
+    {
+        if (animator == null) return;
+        if (string.IsNullOrEmpty(stateName)) return;
+
+        animator.Play(stateName, 0, 0f);
     }
 
     private void HandleAttackTimer()
@@ -193,6 +208,8 @@ public class PlayerCombat : MonoBehaviour
         hitboxActive = true;
         canCancel = true;
 
+        PlayAnimationState(currentAttackData.hitAnimationState);
+
         lastHitboxCenter = GetHitboxCenter(currentAttackData);
         lastHitboxSize = currentAttackData.hitboxSize;
         hitboxDrawTimer = currentAttackData.hitboxEndTime - currentAttackData.hitboxStartTime;
@@ -219,6 +236,7 @@ public class PlayerCombat : MonoBehaviour
         {
             movement.SetMovementLocked(false);
         }
+        PlayAnimationState("playerIdle");
         isAttacking = false;
         hitboxActive = false;
         canCancel = false;

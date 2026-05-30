@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4324588093953921363}
   - component: {fileID: 832027279754468402}
   - component: {fileID: 8131512089587150540}
+  - component: {fileID: 8343838606725989470}
   m_Layer: 7
   m_Name: testEnemy
   m_TagString: Untagged
@@ -226,3 +227,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.64, y: 0.64}
   m_EdgeRadius: 0
+--- !u!114 &8343838606725989470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8048615352662986824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ac44af14a2129458717cfcc28d97dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CoinSpawner
+  coinPrefab: {fileID: 5396210956603099952, guid: 8de1b84f6fc565346ba116d1c4fcf4d4, type: 3}
+  minCoins: 5
+  maxCoins: 15
+  bronzeChance: 0.7
+  silverChance: 0.22
+  goldChance: 0.07
+  redChance: 0.01
+  spawnOffset: {x: 0, y: 0.5}

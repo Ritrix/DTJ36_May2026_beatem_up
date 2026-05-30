@@ -23,5 +23,6 @@ public class AttackData : ScriptableObject
     public float stunDuration = 0.3f;
 
     [Header("Animation")]
-    public string animationName;
+    public string windUpAnimationState;
+    public string hitAnimationState;
 }
