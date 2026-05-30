@@ -19,6 +19,9 @@ public class AttackData : ScriptableObject
     public Vector2 hitboxOffset = new Vector2(1f, 0f);
     public Vector2 hitboxSize = new Vector2(1f, 1f);
 
+    [Header("Stun")]
+    public float stunDuration = 0.3f;
+
     [Header("Animation")]
     public string animationName;
 }
