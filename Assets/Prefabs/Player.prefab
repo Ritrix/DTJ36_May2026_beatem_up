@@ -15,7 +15,9 @@ GameObject:
   - component: {fileID: 3771510219983405223}
   - component: {fileID: 8364126134767049495}
   - component: {fileID: 272118083330568659}
-  m_Layer: 0
+  - component: {fileID: 6820627163648552035}
+  - component: {fileID: 2279807456985571553}
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +121,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
@@ -275,7 +277,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
   attacks:
   - {fileID: 11400000, guid: 427c02e67d460144f883c29d4009bcae, type: 2}
   - {fileID: 11400000, guid: 089ef75099f857647adf300dca1a5647, type: 2}
@@ -289,3 +291,28 @@ MonoBehaviour:
   debugAttackData: {fileID: 0}
   directionBufferTime: 0.15
   drawHitboxes: 1
+--- !u!114 &6820627163648552035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979821183098404218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c645b913b62df634fbbb7ed76004d384, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+--- !u!114 &2279807456985571553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979821183098404218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4aab16f1f0ed0714c88ece03b667f229, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
