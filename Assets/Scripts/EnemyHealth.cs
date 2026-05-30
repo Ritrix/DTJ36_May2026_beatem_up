@@ -4,10 +4,16 @@ using UnityEngine;
 public class EnemyHealth : MonoBehaviour
 {
     private Health health;
+    [SerializeField] private bool dropCoinsOnHit = false;
+    [SerializeField] private bool dropCoinsOnDeath = true;
+
+    private CoinSpawner coinSpawner;
+    private int lastHitDirection = 1;
 
     private void Awake()
     {
         health = GetComponent<Health>();
+        coinSpawner = GetComponent<CoinSpawner>();
     }
 
     private void OnEnable()
@@ -32,10 +38,20 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    public void TakeHit(AttackData attack, Vector2 hitPosition, int comboHitCount)
+    public void TakeHit(
+        AttackData attack,
+        Vector2 hitPosition,
+        int comboHitCount,
+        int hitDirection
+    )
     {
         health.TakeDamage(attack.damage);
 
+        if (dropCoinsOnHit && coinSpawner != null)
+        {
+            coinSpawner.SpawnCoins(hitDirection);
+        }
+        lastHitDirection = hitDirection;
         Debug.Log(
             $"Enemy hit\n" +
             $"Enemy: {name}\n" +
@@ -45,6 +61,7 @@ public class EnemyHealth : MonoBehaviour
             $"Combo Hits: {comboHitCount}"
         );
     }
+
 
     private void UpdateEnemyHealthUI(int current, int max)
     {
@@ -58,6 +75,10 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
+        if (dropCoinsOnDeath && coinSpawner != null)
+        {
+            coinSpawner.SpawnCoins(lastHitDirection);
+        }
         Debug.Log($"{name} died.");
         gameObject.SetActive(false);
     }

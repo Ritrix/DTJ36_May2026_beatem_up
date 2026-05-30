@@ -308,9 +308,11 @@ public class PlayerCombat : MonoBehaviour
 
             EnemyHealth enemy = hit.GetComponent<EnemyHealth>();
 
+            int direction = movement.FacingDirection();
+
             if (enemy != null)
             {
-                enemy.TakeHit(currentAttackData, hitPosition, comboHitCount);
+                enemy.TakeHit(currentAttackData, hitPosition, comboHitCount, direction);
             }
         }
     }
