@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 301611103}
   - component: {fileID: 301611102}
   - component: {fileID: 301611101}
+  - component: {fileID: 301611105}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -256,6 +257,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &301611105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301611100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7055c9b54302ca146a87a71d195fe453, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleBeatEmUpCamera
+  player: {fileID: 869947381}
+  useDeadzone: 1
+  followSmooth: 10
+  followOffset: {x: 0, y: 0}
+  deadzoneX: 0.25
+  deadzoneY: 0.45
+  targetZoom: 5
+  zoomSmooth: 8
+  maxShake: 0.7
+  shakeDecay: 8
 --- !u!1 &383916093
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,12 +546,17 @@ Transform:
   m_GameObject: {fileID: 681982411}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.8, y: -1.8, z: 0}
+  m_LocalPosition: {x: 0.02, y: -0.46, z: 0}
   m_LocalScale: {x: 2.099431, y: 1.9104619, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &869947381 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
+  m_PrefabInstance: {fileID: 7213347380986804882}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7213347380986804882
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -537,6 +565,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 272118083330568659, guid: 71bface715db30a41acf039239acb578, type: 3}
+      propertyPath: enemyLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.06

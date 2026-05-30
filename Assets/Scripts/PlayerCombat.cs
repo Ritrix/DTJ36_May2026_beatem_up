@@ -331,6 +331,8 @@ public class PlayerCombat : MonoBehaviour
 
             comboHitCount++;
 
+            Camera.main.GetComponent<SimpleBeatEmUpCamera>().Shake(0.4f);
+
             Debug.Log(
                 $"Hit detected!\n" +
                 $"Attack: {currentAttackData.name}\n" +
