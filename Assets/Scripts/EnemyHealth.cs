@@ -7,6 +7,9 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private bool dropCoinsOnHit = false;
     [SerializeField] private bool dropCoinsOnDeath = true;
 
+    public event System.Action<EnemyHealth> OnEnemyDied;
+    private bool hasDied;
+
     private CoinSpawner coinSpawner;
     private int lastHitDirection = 1;
 
@@ -103,14 +106,21 @@ public class EnemyHealth : MonoBehaviour
             UIHandler.instance.SetEnemyHealthValue(percentage);
         }
     }
-
     private void Die()
     {
+        if (hasDied) return;
+
         if (dropCoinsOnDeath && coinSpawner != null)
         {
             coinSpawner.SpawnCoins(lastHitDirection);
         }
+
+        hasDied = true;
+
         Debug.Log($"{name} died.");
+
+        OnEnemyDied?.Invoke(this);
+
         gameObject.SetActive(false);
     }
 }

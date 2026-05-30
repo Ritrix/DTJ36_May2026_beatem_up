@@ -1,49 +1,236 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
-
-public class enemyBehaviour : MonoBehaviour
+public class EnemyBehaviour : MonoBehaviour
 {
-    [Header("Follow Player + Movement")]
-    public GameObject playerPosition;
-    public GameObject enemyObject;
-    [SerializeField] private bool facingRight = true;
-    [SerializeField] private float minYOffset = -0.1f;
-    [SerializeField] private float maxYOffset = +0.1f;
-    private float targetYOffset;
+    [Header("References")]
+    [SerializeField] private Transform player;
 
-    [Header("Detection")]
-    [SerializeField] private Vector3 detectionRange = new Vector3 (2f, 0f);
-    [SerializeField] private Vector2 detectionOffset = new Vector2(3f, 0f);
-    [SerializeField] private LayerMask playerLayer; 
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed = 1f;
+    [SerializeField] private float movementStartDelay = 1f;
 
+    [Header("Attack Position")]
+    [SerializeField] private float desiredXDistance = 1f;
+    [SerializeField] private float xTolerance = 0.15f;
+    [SerializeField] private float yTolerance = 0.25f;
+    [SerializeField] private float maxYVariation = 0.2f;
+    [SerializeField] private float positionRefreshTime = 2f;
+
+    [Header("Personal Space")]
+    [SerializeField] private float minimumPersonalSpace = 0.8f;
+    [SerializeField] private float retreatDistanceMin = 0.3f;
+    [SerializeField] private float retreatDistanceMax = 0.8f;
 
     [Header("Attack")]
     [SerializeField] private float attackCooldown = 1.5f;
-    private float cooldownTimer;
 
+    [Header("Attack Hitbox")]
+    [SerializeField] private int attackDamage = 10;
+    [SerializeField] private Vector2 attackHitboxSize = new Vector2(1f, 0.8f);
+    [SerializeField] private Vector2 attackHitboxOffset = new Vector2(0.8f, 0f);
+    [SerializeField] private LayerMask playerLayer;
 
     private Animator anim;
-    private Rigidbody2D rb;
+    private EnemyHealth enemyHealth;
+
+    private Vector2 desiredOffset;
+    private float offsetTimer;
+    private float cooldownTimer;
+    private float currentRetreatDistance;
+
+    private bool canMove;
+    private bool facingRight = true;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody2D>();
+        enemyHealth = GetComponent<EnemyHealth>();
     }
 
-    public float enemySpeed = 1f;
-
-    private bool canMove;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void SetPlayer(Transform newPlayer)
     {
-        Invoke(nameof(EnableMovement), 5f);
+        player = newPlayer;
+    }
 
-        //get random y offset 
-        targetYOffset = Random.Range(minYOffset, maxYOffset);
+    private void Start()
+    {
+        Invoke(nameof(EnableMovement), movementStartDelay);
+        GenerateNewOffset();
+    }
+
+    private void Update()
+    {
+        if (player == null) return;
+
+        cooldownTimer += Time.deltaTime;
+
+        FacePlayer();
+
+        if (enemyHealth != null && enemyHealth.IsStunned)
+            return;
+
+        HandleMovementAndAttack();
+        RefreshOffsetIfNeeded();
+    }
+
+    private void HandleMovementAndAttack()
+    {
+        if (IsTooCloseToPlayer())
+        {
+            RetreatFromPlayer();
+            return;
+        }
+
+        if (IsInAttackPosition())
+        {
+            Attack();
+            return;
+        }
+
+        if (canMove)
+        {
+            MoveToAttackPosition();
+        }
+    }
+
+    private void RefreshOffsetIfNeeded()
+    {
+        if (IsInAttackPosition()) return;
+
+        offsetTimer += Time.deltaTime;
+
+        if (offsetTimer < positionRefreshTime) return;
+
+        offsetTimer = 0f;
+        GenerateNewOffset();
+    }
+
+    private void GenerateNewOffset()
+    {
+        float side = transform.position.x < player.position.x ? -1f : 1f;
+
+        desiredOffset = new Vector2(
+            desiredXDistance * side,
+            Random.Range(-maxYVariation, maxYVariation)
+        );
+
+        currentRetreatDistance = Random.Range(
+            retreatDistanceMin,
+            retreatDistanceMax
+        );
+    }
+
+    private Vector3 GetDesiredAttackPosition()
+    {
+        return new Vector3(
+            player.position.x + desiredOffset.x,
+            player.position.y + desiredOffset.y,
+            transform.position.z
+        );
+    }
+
+    private bool IsInAttackPosition()
+    {
+        Vector3 targetPosition = GetDesiredAttackPosition();
+
+        float xDistance = Mathf.Abs(transform.position.x - targetPosition.x);
+        float yDistance = Mathf.Abs(transform.position.y - targetPosition.y);
+
+        return xDistance <= xTolerance && yDistance <= yTolerance;
+    }
+
+    private bool IsTooCloseToPlayer()
+    {
+        float xDistance = Mathf.Abs(transform.position.x - player.position.x);
+        return xDistance < minimumPersonalSpace;
+    }
+
+    private void MoveToAttackPosition()
+    {
+        MoveTowards(GetDesiredAttackPosition());
+    }
+
+    private void RetreatFromPlayer()
+    {
+        float side = transform.position.x < player.position.x ? -1f : 1f;
+
+        Vector3 retreatTarget = transform.position;
+        retreatTarget.x += side * currentRetreatDistance;
+
+        MoveTowards(retreatTarget);
+    }
+
+    private void MoveTowards(Vector3 target)
+    {
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            target,
+            moveSpeed * Time.deltaTime
+        );
+    }
+
+    private void FacePlayer()
+    {
+        facingRight = player.position.x > transform.position.x;
+
+        float xScale = facingRight ? -2f : 2f;
+        transform.localScale = new Vector3(xScale, 2f, 2f);
+    }
+
+    private void Attack()
+    {
+        if (cooldownTimer < attackCooldown) return;
+
+        Debug.Log($"{name} attacks.");
+
+        cooldownTimer = 0f;
+
+        if (anim != null)
+        {
+            anim.SetTrigger("meleeAttack");
+        }
+
+        HitPlayer();
+    }
+
+    private void HitPlayer()
+    {
+        Vector2 hitboxCenter = GetAttackHitboxCenter();
+
+        Collider2D hit = Physics2D.OverlapBox(
+            hitboxCenter,
+            attackHitboxSize,
+            0f,
+            playerLayer
+        );
+
+        if (hit == null)
+        {
+            Debug.Log($"{name} missed.");
+            return;
+        }
+
+        Health playerHealth = hit.GetComponent<Health>();
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("Player was hit, but no Health component was found.");
+            return;
+        }
+
+        playerHealth.TakeDamage(attackDamage);
+
+        Debug.Log($"{name} hit player for {attackDamage} damage.");
+    }
+
+    private Vector2 GetAttackHitboxCenter()
+    {
+        float direction = facingRight ? 1f : -1f;
+
+        Vector2 offset = attackHitboxOffset;
+        offset.x *= direction;
+
+        return (Vector2)transform.position + offset;
     }
 
     private void EnableMovement()
@@ -51,104 +238,14 @@ public class enemyBehaviour : MonoBehaviour
         canMove = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDrawGizmosSelected()
     {
-        facePlayer();
-        cooldownTimer += Time.deltaTime;
+        if (player == null) return;
 
-        if (PlayerInSight())
-        {
-            // Player detected → stop and attack
-            Attack();
-        }
-        else if (canMove) 
-        {
-            
-            // Move toward player + offset
-            Vector3 targetPos = new Vector3(
-                playerPosition.transform.position.x,
-                playerPosition.transform.position.y + targetYOffset,
-                enemyObject.transform.position.z
-            );
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(GetDesiredAttackPosition(), 0.1f);
 
-            enemyObject.transform.position = Vector3.MoveTowards(
-                enemyObject.transform.position,
-                targetPos,
-                enemySpeed * Time.deltaTime
-            );
-        }
-    }
-
-
-
-    private void facePlayer() //faces sprite towards player on x axis
-    {
-        // face towards player
-        if (playerPosition.transform.position.x < enemyObject.transform.position.x)
-        {
-            // Player is to the left
-            facingRight = false;
-            enemyObject.transform.localScale = new Vector3(2f, 2f, 2f); // Normal scale
-        }
-        else
-        {
-            // Player is to the right
-            facingRight= true;
-            enemyObject.transform.localScale = new Vector3(-2f, 2f, 2f); // Flip x scale
-        }
-    }
-
-    // ---------------- ATTACK ----------------
-
-    private void Attack()
-    {
-
-        if (cooldownTimer >= attackCooldown)
-        {
-            Debug.Log("Attack triggered");
-
-            cooldownTimer = 0f;
-            anim.SetTrigger("meleeAttack");
-        }
-    }
-
-    // ---------------- PLAYER DETECTION ----------------
-
-    private bool PlayerInSight()
-    {
-
-        Vector2 detectPosition = (Vector2)transform.position;
-
-
-        Collider2D hit = Physics2D.OverlapBox(
-            detectPosition,
-            detectionRange,
-            0f,
-            playerLayer
-        );
-
-
-        return hit != null;
-    }
-
-
-    // ---------------- GIZMOS ----------------
-
-    private void OnDrawGizmos()
-    {
         Gizmos.color = Color.red;
-
-        Vector2 detectPosition = (Vector2)transform.position;
-
-        Vector2 direction = facingRight ? Vector2.right : Vector2.left;
-
-        detectPosition += new Vector2(
-            direction.x * detectionOffset.x,
-            detectionOffset.y
-        );
-
-        Gizmos.DrawWireCube(detectPosition, detectionRange);
-
+        Gizmos.DrawWireCube(GetAttackHitboxCenter(), attackHitboxSize);
     }
 }

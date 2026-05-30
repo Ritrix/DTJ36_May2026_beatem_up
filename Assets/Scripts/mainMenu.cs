@@ -3,9 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class mainMenu : MonoBehaviour
 {
-    public void startGame()
+    public void startSurvivalModeIntro()
     {
-        SceneManager.LoadScene("TestScene");
+        SceneManager.LoadScene("SurvivalModeIntro");
+    }
+
+    public void startSurvivalMode()
+    {
+        SceneManager.LoadScene("SurvivalMode");
     }
 
     //public void tutorial()

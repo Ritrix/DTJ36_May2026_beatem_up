@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 2457875659916856632}
   - component: {fileID: 2978305558287190506}
   - component: {fileID: 7034532979436370687}
+  - component: {fileID: 4324588093953921363}
+  - component: {fileID: 832027279754468402}
+  - component: {fileID: 8131512089587150540}
   m_Layer: 7
   m_Name: testEnemy
   m_TagString: Untagged
@@ -105,18 +108,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f498a8cb2ac43d4697a2e3c0988b2fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyBehaviour
-  playerPosition: {fileID: 0}
-  enemyObject: {fileID: 8048615352662986824}
-  facingRight: 1
-  minYOffset: -2
-  maxYOffset: 2
-  detectionRange: {x: 1.31, y: 0.75, z: 0.01}
-  detectionOffset: {x: 0.95, y: -0.12}
+  player: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
+  moveSpeed: 3
+  movementStartDelay: 1
+  desiredXDistance: 1.3
+  xTolerance: 0.35
+  yTolerance: 0.25
+  maxYVariation: 0.2
+  positionRefreshTime: 2
+  minimumPersonalSpace: 1.45
+  retreatDistanceMin: 0.96
+  retreatDistanceMax: 1.5
+  attackCooldown: 1.5
+  attackDamage: 10
+  attackHitboxSize: {x: 1, y: 0.8}
+  attackHitboxOffset: {x: 0.8, y: 0}
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  attackCooldown: 1.5
-  enemySpeed: 3
 --- !u!50 &7034532979436370687
 Rigidbody2D:
   serializedVersion: 5
@@ -143,4 +152,77 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
+--- !u!114 &4324588093953921363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8048615352662986824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c645b913b62df634fbbb7ed76004d384, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+--- !u!114 &832027279754468402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8048615352662986824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a386122a0afa1d4c847bb5cfd85b8de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  dropCoinsOnHit: 1
+  dropCoinsOnDeath: 1
+--- !u!61 &8131512089587150540
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8048615352662986824}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.64, y: 0.64}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.64, y: 0.64}
+  m_EdgeRadius: 0

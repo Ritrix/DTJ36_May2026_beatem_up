@@ -284,6 +284,8 @@ public class PlayerCombat : MonoBehaviour
             enemyLayer
         );
 
+        Debug.Log($"hit!: {hits.Length}");
+
         if (hits.Length == 0)
         {
             return;
@@ -291,6 +293,7 @@ public class PlayerCombat : MonoBehaviour
 
         foreach (Collider2D hit in hits)
         {
+            Debug.Log($"Found collider: {hit.name}");
             Vector2 hitPosition = hit.ClosestPoint(hitboxCenter);
 
             comboHitCount++;
@@ -306,13 +309,17 @@ public class PlayerCombat : MonoBehaviour
                 $"Combo Hits: {comboHitCount}"
             );
 
-            EnemyHealth enemy = hit.GetComponent<EnemyHealth>();
+            EnemyHealth enemy = hit.GetComponentInParent<EnemyHealth>();
 
             int direction = movement.FacingDirection();
 
             if (enemy != null)
             {
                 enemy.TakeHit(currentAttackData, hitPosition, comboHitCount, direction);
+            }
+            else
+            {
+                Debug.LogWarning($"Hit {hit.name}, but no EnemyHealth found on it or its parents.");
             }
         }
     }

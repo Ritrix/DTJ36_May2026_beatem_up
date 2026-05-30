@@ -20,10 +20,14 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        Debug.Log($"{name} TakeDamage called for {amount}");
+
         if (IsDead) return;
 
         CurrentHealth -= amount;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+
+        Debug.Log($"{name} health is now {CurrentHealth}/{maxHealth}");
 
         OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
 
