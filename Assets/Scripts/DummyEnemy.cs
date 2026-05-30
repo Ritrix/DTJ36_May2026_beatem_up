@@ -17,16 +17,22 @@ public class DummyEnemy : MonoBehaviour
     private bool isStunned;
     private float stunTimer;
 
+    private EnemyHealth enemyHealth;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;
         currentHealth = maxHealth;
+        enemyHealth = GetComponent<EnemyHealth>();
     }
 
     private void Update()
     {
-        if (!isStunned) return;
+        if (enemyHealth.IsStunned)
+        {
+            return;
+        }
 
         stunTimer -= Time.deltaTime;
 

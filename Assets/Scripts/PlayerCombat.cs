@@ -123,18 +123,7 @@ public class PlayerCombat : MonoBehaviour
             ? bufferedDirection
             : moveInput;
 
-        Debug.Log(
-            $"ATTACK INPUT DEBUG\n" +
-            $"Strength: {strength}\n" +
-            $"moveInput: {moveInput}\n" +
-            $"bufferedDirection: {bufferedDirection}\n" +
-            $"directionBufferTimer: {directionBufferTimer}\n" +
-            $"Using Buffered: {directionBufferTimer > 0f}"
-        );
-
         AttackDirection direction = GetAttackDirection(attackInput);
-
-        Debug.Log($"Chosen Attack Direction: {direction}");
 
         AttackData nextAttack = GetAttackData(strength, direction);
 
@@ -174,20 +163,6 @@ public class PlayerCombat : MonoBehaviour
 
         string attackKey = $"{attack.strength}_{attack.direction}";
         usedAttacksThisCombo.Add(attackKey);
-
-        Debug.Log(
-            $"ATTACK STARTED\n" +
-            $"Name: {attack.name}\n" +
-            $"Strength: {attack.strength}\n" +
-            $"Direction: {attack.direction}\n" +
-            $"Damage: {attack.damage}\n" +
-            $"Duration: {attack.attackDuration}\n" +
-            $"Hitbox Start: {attack.hitboxStartTime}\n" +
-            $"Hitbox End: {attack.hitboxEndTime}\n" +
-            $"Hitbox Offset: {attack.hitboxOffset}\n" +
-            $"Hitbox Size: {attack.hitboxSize}\n" +
-            $"Interrupted Previous Move: {wasInterrupted}"
-        );
     }
 
     private void HandleAttackTimer()
@@ -222,14 +197,6 @@ public class PlayerCombat : MonoBehaviour
         lastHitboxSize = currentAttackData.hitboxSize;
         hitboxDrawTimer = currentAttackData.hitboxEndTime - currentAttackData.hitboxStartTime;
 
-
-
-        Debug.Log(
-            $"HITBOX ACTIVE\n" +
-            $"Attack: {currentAttackData.name}\n" +
-            $"Can Cancel: {canCancel}"
-        );
-
         CheckHits();
     }
 
@@ -244,8 +211,6 @@ public class PlayerCombat : MonoBehaviour
     private void DeactivateHitbox()
     {
         hitboxActive = false;
-
-        Debug.Log("Hitbox inactive");
     }
 
     private void EndAttack()
@@ -257,8 +222,6 @@ public class PlayerCombat : MonoBehaviour
         isAttacking = false;
         hitboxActive = false;
         canCancel = false;
-
-        Debug.Log("Attack ended");
     }
 
     private void HandleComboTimer()
@@ -275,11 +238,13 @@ public class PlayerCombat : MonoBehaviour
 
     private void ResetCombo()
     {
+        Debug.Log($"Combo reset. Combo Hit Count: {comboHitCount}");
+
         usedAttacksThisCombo.Clear();
         comboTimer = 0f;
         comboHitCount = 0;
 
-        Debug.Log("Combo reset");
+        
     }
 
     private AttackDirection GetAttackDirection(Vector2 input)
@@ -321,7 +286,6 @@ public class PlayerCombat : MonoBehaviour
 
         if (hits.Length == 0)
         {
-            Debug.Log($"Attack missed: {currentAttackData.name}");
             return;
         }
 
@@ -330,6 +294,8 @@ public class PlayerCombat : MonoBehaviour
             Vector2 hitPosition = hit.ClosestPoint(hitboxCenter);
 
             comboHitCount++;
+
+            Camera.main.GetComponent<SimpleBeatEmUpCamera>().Shake(0.4f);
 
             Debug.Log(
                 $"Hit detected!\n" +
@@ -340,11 +306,13 @@ public class PlayerCombat : MonoBehaviour
                 $"Combo Hits: {comboHitCount}"
             );
 
-            DummyEnemy dummy = hit.GetComponent<DummyEnemy>();
+            EnemyHealth enemy = hit.GetComponent<EnemyHealth>();
 
-            if (dummy != null)
+            int direction = movement.FacingDirection();
+
+            if (enemy != null)
             {
-                dummy.TakeHit(currentAttackData, hitPosition, comboHitCount);
+                enemy.TakeHit(currentAttackData, hitPosition, comboHitCount, direction);
             }
         }
     }

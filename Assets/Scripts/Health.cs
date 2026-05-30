@@ -1,0 +1,45 @@
+using UnityEngine;
+using System;
+
+public class Health : MonoBehaviour
+{
+    [SerializeField] private int maxHealth = 100;
+
+    public int CurrentHealth { get; private set; }
+    public int MaxHealth => maxHealth;
+    public bool IsDead => CurrentHealth <= 0;
+
+    public event Action<int, int> OnHealthChanged;
+    public event Action OnDied;
+
+    private void Awake()
+    {
+        CurrentHealth = maxHealth;
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+    }
+
+    public void TakeDamage(int amount)
+    {
+        if (IsDead) return;
+
+        CurrentHealth -= amount;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+
+        if (CurrentHealth <= 0)
+        {
+            OnDied?.Invoke();
+        }
+    }
+
+    public void Heal(int amount)
+    {
+        if (IsDead) return;
+
+        CurrentHealth += amount;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+    }
+}

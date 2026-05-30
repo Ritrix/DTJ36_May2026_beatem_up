@@ -1,0 +1,20 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="healthBarBackground" style="flex-grow: 0; width: 20%; height: 20%; -unity-background-scale-mode: scale-to-fit;">
+        <ui:Label text="Player:" name="PlayerNameLabel" style="left: 5%; color: rgb(0, 0, 0); -unity-font-style: bold; font-size: 16px;"/>
+        <ui:VisualElement name="healthBarGreyBackground" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/healthBarBackground.png?fileID=2800000&amp;guid=bb27fd25db30b834f8da33fdfa350fc0&amp;type=3#healthBarBackground&quot;); height: 20%; width: 90%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; left: 5%;">
+            <ui:VisualElement name="healthBarContainer" style="flex-grow: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; width: 96%; height: 70%; left: 2%; top: 15%;">
+                <ui:VisualElement name="HealthBar" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/healthBar.png?fileID=2800000&amp;guid=809691e34929bed4c9ee58a2af7b2068&amp;type=3#healthBar&quot;);"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label text="Label" name="WaveLabel" style="left: 5%; font-size: 16px; -unity-font-style: bold; color: rgb(0, 0, 0);"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="EnemyHealthBarBackground" style="flex-grow: 0; width: 20%; height: 20%; -unity-background-scale-mode: scale-to-fit; right: 0%; background-position-x: center 0; flex-direction: column; flex-wrap: nowrap; left: auto; position: absolute; top: 0%;">
+        <ui:Label text="Enemy Health:" name="EnemyNameLabel" style="left: 5%; color: rgb(0, 0, 0); -unity-font-style: bold; font-size: 16px;"/>
+        <ui:VisualElement name="EnemyhealthBarGreyBackground" style="flex-grow: 0; background-image: url(&quot;project://database/Assets/Sprites/healthBarBackground.png?fileID=2800000&amp;guid=bb27fd25db30b834f8da33fdfa350fc0&amp;type=3#healthBarBackground&quot;); height: 20%; width: 90%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; left: 5%;">
+            <ui:VisualElement name="EnemyHealthBarContainer" style="flex-grow: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; width: 96%; height: 70%; left: 2%; top: 15%;">
+                <ui:VisualElement name="EnemyHealthBar" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Sprites/healthBar.png?fileID=2800000&amp;guid=809691e34929bed4c9ee58a2af7b2068&amp;type=3#healthBar&quot;);"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label text="Label" name="enemiesRemainingLabel" style="left: 5%; font-size: 16px; -unity-font-style: bold; color: rgb(0, 0, 0);"/>
+    </ui:VisualElement>
+</ui:UXML>
