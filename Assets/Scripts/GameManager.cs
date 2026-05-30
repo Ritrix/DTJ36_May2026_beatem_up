@@ -32,6 +32,21 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    public void ReturnToMainMenuAfterDeath()
+    {
+        ResetRunDataOnly();
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void ResetRunDataOnly()
+    {
+        CurrentWave = 1;
+        Coins = 0;
+        BonusMaxHealth = 0;
+        BonusMoveSpeed = 0f;
+        BonusDamage = 0;
+    }
+
     public void AddCoins(int amount)
     {
         Coins += amount;

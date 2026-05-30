@@ -310,6 +310,67 @@ MonoBehaviour:
   zoomSmooth: 8
   maxShake: 0.7
   shakeDecay: 2
+--- !u!1001 &873638266
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 30083621124746227, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1194398698}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.595879
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.5120668
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 478927421130470743, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5692046016314906837, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
+      propertyPath: m_Name
+      value: testJumper
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
 --- !u!1 &1045439898
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,7 +567,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
   player: {fileID: 1194398698}
   enemyPrefabs:
-  - {fileID: 2978305558287190506, guid: 17c479acab4d6c3428ef697867c1f7f9, type: 3}
+  - {fileID: 8048615352662986824, guid: 17c479acab4d6c3428ef697867c1f7f9, type: 3}
+  - {fileID: 5692046016314906837, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
   spawnPoints:
   - {fileID: 509018889}
   - {fileID: 1045439899}
@@ -518,6 +580,8 @@ MonoBehaviour:
   spawnRateIncreasePerWave: 0.12
   spawnIntervalMultiplierPerWave: 0.85
   maxAliveEnemies: 20
+  jumperSpawnCenter: {x: 0, y: 0}
+  jumperSpawnSize: {x: 0, y: 0}
   startDelay: 2
   endWaveDelay: 2
 --- !u!4 &1825885732
@@ -637,3 +701,4 @@ SceneRoots:
   - {fileID: 1825885732}
   - {fileID: 509018889}
   - {fileID: 1045439899}
+  - {fileID: 873638266}

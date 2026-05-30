@@ -73,11 +73,29 @@ public class EnemyHealth : MonoBehaviour
         {
             coinSpawner.SpawnCoins(hitDirection);
         }
-        
-        ApplyStun(attack.stunDuration);
+
+        bool handledSpecialHitReaction = false;
+
+        JumperBehaviour jumper = GetComponentInParent<JumperBehaviour>();
+
+        if (jumper != null)
+        {
+            Debug.Log($"Jumper found. CanBeKnockedDown: {jumper.CanBeKnockedDown}");
+
+            if (jumper.CanBeKnockedDown)
+            {
+                jumper.LaunchAwayFromPlayer();
+                handledSpecialHitReaction = true;
+            }
+        }
+
+        if (!handledSpecialHitReaction)
+        {
+            ApplyStun(attack.stunDuration);
+        }
 
         lastHitDirection = hitDirection;
-        
+
         Debug.Log(
             $"Enemy hit\n" +
             $"Enemy: {name}\n" +

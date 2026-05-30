@@ -5,7 +5,7 @@ public class WaveSpawner : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform player;
-    [SerializeField] private EnemyBehaviour[] enemyPrefabs;
+    [SerializeField] private GameObject[] enemyPrefabs;
     [SerializeField] private Transform[] spawnPoints;
 
     [Header("Wave Scaling")]
@@ -20,6 +20,10 @@ public class WaveSpawner : MonoBehaviour
     [SerializeField] private float spawnIntervalMultiplierPerWave = 0.85f;
     [SerializeField] private int maxAliveEnemies = 20;
     private int aliveEnemies;
+
+    [Header("Jumper Spawn Area")]
+    [SerializeField] private Vector2 jumperSpawnCenter;
+    [SerializeField] private Vector2 jumperSpawnSize;
 
     [Header("Timing")]
     [SerializeField] private float startDelay = 2f;
@@ -100,29 +104,72 @@ public class WaveSpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        if (enemyPrefabs.Length == 0 || spawnPoints.Length == 0)
+        if (enemyPrefabs.Length == 0)
         {
-            Debug.LogWarning("WaveSpawner is missing enemy prefabs or spawn points.");
+            Debug.LogWarning("WaveSpawner is missing enemy prefabs.");
             return;
         }
 
-        EnemyBehaviour prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
 
-        EnemyBehaviour enemy = Instantiate(
+        Vector3 spawnPosition;
+
+        if (prefab.GetComponent<JumperBehaviour>() != null)
+        {
+            spawnPosition = GetRandomJumperPosition();
+        }
+        else
+        {
+            if (spawnPoints.Length == 0)
+            {
+                Debug.LogWarning("WaveSpawner is missing spawn points.");
+                return;
+            }
+
+            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            spawnPosition = spawnPoint.position;
+        }
+
+        GameObject enemyObject = Instantiate(
             prefab,
-            spawnPoint.position,
+            spawnPosition,
             Quaternion.identity
         );
+
         aliveEnemies++;
-        enemy.SetPlayer(player);
 
-        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+        EnemyBehaviour enemyBehaviour = enemyObject.GetComponent<EnemyBehaviour>();
+        if (enemyBehaviour != null)
+        {
+            enemyBehaviour.SetPlayer(player);
+        }
 
+        JumperBehaviour jumperBehaviour = enemyObject.GetComponent<JumperBehaviour>();
+        if (jumperBehaviour != null)
+        {
+            jumperBehaviour.SetPlayer(player);
+        }
+
+        EnemyHealth enemyHealth = enemyObject.GetComponent<EnemyHealth>();
         if (enemyHealth != null)
         {
             enemyHealth.OnEnemyDied += HandleEnemyDied;
         }
+    }
+
+    private Vector2 GetRandomJumperPosition()
+    {
+        float x = Random.Range(
+            jumperSpawnCenter.x - jumperSpawnSize.x * 0.5f,
+            jumperSpawnCenter.x + jumperSpawnSize.x * 0.5f
+        );
+
+        float y = Random.Range(
+            jumperSpawnCenter.y - jumperSpawnSize.y * 0.5f,
+            jumperSpawnCenter.y + jumperSpawnSize.y * 0.5f
+        );
+
+        return new Vector2(x, y);
     }
 
     private void HandleEnemyDied(EnemyHealth enemy)
