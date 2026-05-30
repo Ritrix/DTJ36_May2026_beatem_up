@@ -38,7 +38,8 @@ public class jumperBehaviour : MonoBehaviour
     private Rigidbody2D rb;
     private bool isAttacking;
     private bool recharging;
-    [SerializeField] public BoxCollider2D attackHitbox;
+    private bool attackActive;
+    private bool hasHitPlayerThisAttack;
 
 
     private SpriteRenderer spriteRenderer;
@@ -135,34 +136,26 @@ public class jumperBehaviour : MonoBehaviour
         {
             StartCoroutine(AttackRoutine());
         }
-        Debug.Log($"Has landed: {hasLanded}, player in sight: {PlayerInSight()}, Is attacking: {isAttacking}, recharging: {recharging}");
+      //Debug.Log($"Has landed: {hasLanded}, player in sight: {PlayerInSight()}, Is attacking: {isAttacking}, recharging: {recharging}");
     }
 
 
-    
-    
+
+
     // JUMP ATTACK SEQUENCE //
     private IEnumerator AttackRoutine()
     {
-
-
-        isAttacking = true;
         recharging = true;
 
-
-
-        // Telegraph attack
+        // Windup
         yield return StartCoroutine(WindupHops());
 
-
-
-        // Lock player's position
         Vector2 attackTarget = playerPosition.transform.position;
 
+        hasHitPlayerThisAttack = false;
+        isAttacking = true;
 
-
-
-        // Attack
+        // Actual attack
         yield return StartCoroutine(
             ArcJump(
                 transform.position,
@@ -172,20 +165,28 @@ public class jumperBehaviour : MonoBehaviour
             )
         );
 
-        if (attackHitbox.enabled == true)
-        {
-            Debug.Log("Jump attack Hit");
-        }
-
-
-
         isAttacking = false;
 
         yield return new WaitForSeconds(attackCooldown);
 
         recharging = false;
+    }
 
+    //private void OnTriggerStay2D(Collider2D other)
+    //{
+    //    Debug.Log($"Touching: {other.name}");
+    //}
 
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (!isAttacking || hasHitPlayerThisAttack)
+            return;
+
+        if (other.CompareTag("Player"))
+        {
+            hasHitPlayerThisAttack = true;
+            Debug.Log("Jump Attack Hit");
+        }
     }
 
     //actual attack
@@ -195,7 +196,7 @@ public class jumperBehaviour : MonoBehaviour
     //    {
     //        return;
     //    }
-        
+
     //    if (other.CompareTag("Player"))
     //    {
     //        Debug.Log("Jump Attack Hit");
@@ -227,6 +228,7 @@ public class jumperBehaviour : MonoBehaviour
     float jumpHeight,
     float duration)
     {
+        isAttacking = true;
         float elapsed = 0f;
 
         while (elapsed < duration)
@@ -247,6 +249,8 @@ public class jumperBehaviour : MonoBehaviour
 
             yield return null;
         }
+
+        isAttacking = false;
 
         transform.position = endPos;
     }
