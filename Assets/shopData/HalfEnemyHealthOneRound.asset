@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Half enemy health
   description: Halves the health of all enemies for the next round.
   itemType: 4
-  baseCost: 300
+  baseCost: 450
   value: 0
   weight: 6
   perk: {fileID: 0}

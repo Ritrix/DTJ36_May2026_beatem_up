@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Nuke
   description: 'Use once any time: Kills all enemies around you.'
   itemType: 6
-  baseCost: 180
+  baseCost: 270
   value: 0
   weight: 4
   perk: {fileID: 0}

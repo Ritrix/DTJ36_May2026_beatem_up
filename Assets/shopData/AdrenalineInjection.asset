@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Adrenaline Injection
   description: 'Use once any time: instantly fills super meter'
   itemType: 6
-  baseCost: 80
+  baseCost: 120
   value: 0
   weight: 4
   perk: {fileID: 0}

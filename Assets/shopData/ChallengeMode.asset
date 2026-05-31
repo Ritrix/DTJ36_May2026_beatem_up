@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Challenge
   description: Next round has triple enemies. Survive to double your wallet.
   itemType: 8
-  baseCost: 80
+  baseCost: 120
   value: 0
   weight: 5
   perk: {fileID: 0}
