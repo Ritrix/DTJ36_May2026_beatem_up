@@ -1993,9 +1993,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   basicItems:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: a8df89c7d8306ad42b0f7faca2ed5100, type: 2}
+  - {fileID: 11400000, guid: c0d13a5a6bc5cca4981dcf6d65e35baa, type: 2}
+  - {fileID: 11400000, guid: d1104f2664982d541958cb5f0b02b3e3, type: 2}
   perks:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 4ac5f9f33d236484787601cd9b37fc84, type: 2}
+  - {fileID: 11400000, guid: d2b9da22372ae464997599828e07220c, type: 2}
   shopButtons:
   - {fileID: 2118922985}
   - {fileID: 1283362473}

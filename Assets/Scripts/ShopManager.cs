@@ -18,8 +18,6 @@ public class ShopManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private PerkPopupUI perkPopupUI;
 
-    private PerkData pendingPerk;
-
     private void Start()
     {
         GenerateShop();
@@ -30,6 +28,8 @@ public class ShopManager : MonoBehaviour
         currentOffers[0] = GetWeightedBasicItem();
         currentOffers[1] = GetWeightedBasicItem();
         currentOffers[2] = CreatePerkOffer();
+
+        Debug.Log($"Generated shop offers: {currentOffers[0].itemName}, {currentOffers[1].itemName}, {currentOffers[2].itemName}");
 
         for (int i = 0; i < shopButtons.Length; i++)
         {
@@ -126,6 +126,7 @@ public class ShopManager : MonoBehaviour
 
     private int GetCurrentCost(ShopItem item)
     {
+        Debug.Log($"Calculating cost for {item.itemName}");
         int purchaseCount = GameManager.Instance.GetPurchaseCount(item.itemName);
 
         return item.baseCost + purchaseCount * 25;
