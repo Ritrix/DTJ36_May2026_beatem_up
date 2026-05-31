@@ -181,8 +181,12 @@ public class JumperBehaviour : MonoBehaviour
 
         hasHitPlayerThisAttack = false;
 
-        SetSprite(ceilingSprite);
+        SetSprite(cannonballSprite);
         ResetRotation();
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayJumperFall();
+        }
 
         state = JumperState.Dropping;
     }
@@ -241,6 +245,11 @@ public class JumperBehaviour : MonoBehaviour
 
         SetSprite(cannonballSprite);
         ResetRotation();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayJumperJump();
+        }
 
         yield return StartCoroutine(ArcMove(
             dashStart,

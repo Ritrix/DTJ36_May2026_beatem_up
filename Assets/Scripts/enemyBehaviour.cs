@@ -245,6 +245,11 @@ public class EnemyBehaviour : MonoBehaviour
 
         cooldownTimer = 0f;
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGruntAttack();
+        }
+
         StartCoroutine(AttackRoutine());
 
 

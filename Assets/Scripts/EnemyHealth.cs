@@ -89,6 +89,11 @@ public class EnemyHealth : MonoBehaviour
 
         health.TakeDamage(finalDamage);
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayEnemyHurt();
+        }
+
         if (enemyAnimation != null)
         {
             enemyAnimation.PlayDamaged();

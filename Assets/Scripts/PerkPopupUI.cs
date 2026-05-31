@@ -30,6 +30,11 @@ public class PerkPopupUI : MonoBehaviour
     {
         RefreshSlots();
         popupPanel.SetActive(true);
+
+        if (GameManager.Instance != null && slot4LockedVisual != null)
+        {
+            slot4LockedVisual.SetActive(GameManager.Instance.PerkSlotCount < 4);
+        }
         currentPerk = perk;
     }
 
