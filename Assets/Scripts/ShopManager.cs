@@ -8,24 +8,42 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private ShopItem[] basicItems;
     [SerializeField] private PerkData[] perks;
 
-
     [Header("Buttons")]
     [SerializeField] private Button[] shopButtons;
     [SerializeField] private TMP_Text[] shopButtonTexts;
     [SerializeField] private TMP_Text[] shopTextInButtons;
 
-    private ShopItem[] currentOffers = new ShopItem[3];
-
     [Header("UI")]
     [SerializeField] private PerkPopupUI perkPopupUI;
+    [SerializeField] private TMP_Text coinText;
+    [SerializeField] private TMP_Text equippedPerksText;
+
+    [Header("Reroll")]
+    [SerializeField] private Button rerollButton;
+    [SerializeField] private TMP_Text rerollButtonText;
+    [SerializeField] private int startingRerollCost = 1000;
 
     [Header("ramp ups")]
     [SerializeField] private float rampUpValueAllShopItems = 1.2f;
     [SerializeField] private float rampUpValuePerks = 1.6f;
 
+    private ShopItem[] currentOffers = new ShopItem[3];
+
+    private int currentRerollCost;
+
     private void Start()
     {
+        currentRerollCost = startingRerollCost;
+
+        if (rerollButton != null)
+        {
+            rerollButton.onClick.RemoveAllListeners();
+            rerollButton.onClick.AddListener(RerollShop);
+        }
+
         GenerateShop();
+        RefreshHeaderUI();
+        UpdateRerollButtonText();
     }
 
     private void GenerateShop()
@@ -40,10 +58,53 @@ public class ShopManager : MonoBehaviour
         {
             int index = i;
 
+            shopButtons[i].interactable = true;
             shopButtons[i].onClick.RemoveAllListeners();
             shopButtons[i].onClick.AddListener(() => BuyItem(index));
 
             UpdateButtonText(i);
+        }
+
+        RefreshHeaderUI();
+    }
+
+    private void RerollShop()
+    {
+        if (GameManager.Instance == null) return;
+
+        if (!GameManager.Instance.SpendCoins(currentRerollCost))
+        {
+            Debug.Log("Not enough coins to reroll shop.");
+            return;
+        }
+
+        currentRerollCost *= 2;
+
+        GenerateShop();
+        RefreshHeaderUI();
+        UpdateRerollButtonText();
+    }
+
+    private void RefreshHeaderUI()
+    {
+        if (GameManager.Instance == null) return;
+
+        if (coinText != null)
+        {
+            coinText.text = GameManager.Instance.Coins.ToString();
+        }
+
+        if (equippedPerksText != null)
+        {
+            equippedPerksText.text = GameManager.Instance.GetEquippedPerkNamesText();
+        }
+    }
+
+    private void UpdateRerollButtonText()
+    {
+        if (rerollButtonText != null)
+        {
+            rerollButtonText.text = $"Refresh Shop\nCost: {currentRerollCost}";
         }
     }
 
@@ -131,6 +192,8 @@ public class ShopManager : MonoBehaviour
 
         shopButtons[index].interactable = false;
         shopButtonTexts[index].text = "SOLD";
+
+        RefreshHeaderUI();
     }
 
     private int GetCurrentCost(ShopItem item)
@@ -202,7 +265,6 @@ public class ShopManager : MonoBehaviour
 
         GameManager.Instance.RegisterPurchase(item.itemName);
     }
-
 
     private void UpdateButtonText(int index)
     {

@@ -500,4 +500,25 @@ public class GameManager : MonoBehaviour
         bulwarkAvailable = true;
         Debug.Log("Bulwark recharged.");
     }
+
+    public string GetEquippedPerkNamesText()
+    {
+        string text = "";
+
+        for (int i = 0; i < perkSlotCount; i++)
+        {
+            if (equippedPerks[i] != null)
+            {
+                if (!string.IsNullOrEmpty(text))
+                    text += " | ";
+
+                text += equippedPerks[i].perkName;
+            }
+        }
+
+        if (string.IsNullOrEmpty(text))
+            text = "No perks equipped";
+
+        return text;
+    }
 }
