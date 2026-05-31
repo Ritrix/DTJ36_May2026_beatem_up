@@ -24,6 +24,14 @@ public class CoinPickup : MonoBehaviour
     [SerializeField] private Color goldColor = new Color(1f, 0.75f, 0.1f);
     [SerializeField] private Color redColor = new Color(1f, 0.1f, 0.1f);
 
+    [Header("Spin Animation")]
+    [SerializeField] private Sprite[] spinFrames;
+    [SerializeField] private float frameRate = 10f;
+
+    [Header("Lifetime")]
+    [SerializeField] private float lifeTime = 10f;
+
+    [Header("Magnetism")]
     [SerializeField] private float magnetDelay = 2f;
     [SerializeField] private float magnetSpeed = 6f;
 
@@ -39,6 +47,21 @@ public class CoinPickup : MonoBehaviour
 
     private bool isFlying;
     private bool canPickup;
+
+    private float animationTimer;
+    private int currentFrame;
+
+    private float lifeTimer;
+
+    private void Awake()
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        UpdateVisual();
+
+        lifeTimer = lifeTime;
+    }
 
     public void SetValue(int newValue)
     {
@@ -91,13 +114,60 @@ public class CoinPickup : MonoBehaviour
         isFlying = true;
         canPickup = false;
 
+        lifeTimer = lifeTime;
+
         transform.position = startPosition;
     }
 
     private void Update()
     {
-        if (!isFlying) return;
+        HandleLifetime();
+        HandleSpinAnimation();
 
+        if (isFlying)
+        {
+            HandleFlight();
+            return;
+        }
+
+        if (canPickup)
+        {
+            HandleMagnetism();
+        }
+    }
+
+    private void HandleLifetime()
+    {
+        lifeTimer -= Time.deltaTime;
+
+        if (lifeTimer <= 0f)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void HandleSpinAnimation()
+    {
+        if (spriteRenderer == null) return;
+        if (spinFrames == null || spinFrames.Length == 0) return;
+        if (frameRate <= 0f) return;
+
+        animationTimer += Time.deltaTime;
+
+        if (animationTimer < 1f / frameRate)
+            return;
+
+        animationTimer = 0f;
+
+        currentFrame++;
+        if (currentFrame >= spinFrames.Length)
+            currentFrame = 0;
+
+        spriteRenderer.sprite = spinFrames[currentFrame];
+    }
+
+    private void HandleFlight()
+    {
         timer += Time.deltaTime;
 
         float t = Mathf.Clamp01(timer / flightTime);
@@ -112,11 +182,6 @@ public class CoinPickup : MonoBehaviour
         {
             Land();
         }
-
-        if (!isFlying && canPickup)
-        {
-            HandleMagnetism();
-        }
     }
 
     private void Land()
@@ -126,6 +191,7 @@ public class CoinPickup : MonoBehaviour
         transform.position = targetPosition;
 
         landedTimer = 0f;
+
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
             playerTarget = player.transform;
@@ -133,20 +199,24 @@ public class CoinPickup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Coin collided with {other.name}, can pickup: {canPickup}");
         if (!canPickup) return;
 
-        PlayerWallet wallet = other.GetComponent<PlayerWallet>();
-        Debug.Log($"wallet found: {wallet != null}");
+        PlayerWallet wallet = other.GetComponentInParent<PlayerWallet>();
         if (wallet == null) return;
 
-        wallet.AddCoins(value);
+        int finalValue = GameManager.Instance != null
+            ? GameManager.Instance.ModifyCoinValue(value)
+            : value;
+
+        wallet.AddCoins(finalValue);
+
         Destroy(gameObject);
     }
 
     private void HandleMagnetism()
     {
         if (GameManager.Instance == null) return;
+
         if (!GameManager.Instance.HasCoinMagnetism &&
             !GameManager.Instance.HasPerk(PerkType.Wildcard))
             return;

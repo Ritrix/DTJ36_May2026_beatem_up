@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.86199, y: 0.53975, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: -8722020019358736109, guid: 8658b1111e629e34f903994bb46940e7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -127,8 +127,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: 0.007125169, y: 0}
+  m_Radius: 0.25061968
 --- !u!114 &5396210956603099952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,8 +149,17 @@ MonoBehaviour:
   minLandingDistance: 1
   maxLandingDistance: 5
   maxVerticalLandingOffset: 1
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 3295986398165898631}
   bronzeColor: {r: 0.75, g: 0.35, b: 0.15, a: 1}
   silverColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
   goldColor: {r: 1, g: 0.75, b: 0.1, a: 1}
   redColor: {r: 1, g: 0.1, b: 0.1, a: 1}
+  spinFrames:
+  - {fileID: 8003260396191338441, guid: 8658b1111e629e34f903994bb46940e7, type: 3}
+  - {fileID: 2154074400079490951, guid: 8658b1111e629e34f903994bb46940e7, type: 3}
+  - {fileID: -8722020019358736109, guid: 8658b1111e629e34f903994bb46940e7, type: 3}
+  - {fileID: 7432920796079150873, guid: 8658b1111e629e34f903994bb46940e7, type: 3}
+  frameRate: 10
+  lifeTime: 10
+  magnetDelay: 2
+  magnetSpeed: 6
