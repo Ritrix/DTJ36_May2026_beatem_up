@@ -810,12 +810,21 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "SURVIVAL MODE:\n\nIn this gamemode, you will be tasked with surviving
-    as long as possible against endless waves of mutants. \n\nAt the end of every
-    round, you will be able to buy upgrades with the coins you collect. The shop
-    is random in what it offers, sometimes you might get rare items, or a perk that
-    synergises with your other perks well, other times you might get nothing of use.\n\nHow
-    long can you survive against this endless hoarde?"
+  m_text: 'SURVIVAL MODE:
+
+
+    Survive as many waves as you can in this endless
+    survival mode! Use the J (light attack) and K (heavy attack) keys in combos using
+    the WASD keys to change your moves. You can only use a move once per combo meaning
+    the max combo is 8 (unless you have a certain perk equipped).
+
+    
+
+    After
+    each wave you can spend your coin in the shop to gain a temporary boost, or a
+    permanent upgrade in a perk. The shop is random but can be rerolled. You can
+    have up to 3 perks equipped at once, and can swap a perk for another so long
+    as you buy a new one to replace it.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
