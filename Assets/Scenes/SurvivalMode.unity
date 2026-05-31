@@ -347,6 +347,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
   m_PrefabInstance: {fileID: 1471290317}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1194398703 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1623994745299311198, guid: 71bface715db30a41acf039239acb578, type: 3}
+  m_PrefabInstance: {fileID: 1471290317}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1353811423
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,67 +383,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1407862021
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1407862023}
-  - component: {fileID: 1407862024}
-  - component: {fileID: 1407862025}
-  m_Layer: 0
-  m_Name: TempGameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1407862023
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407862021}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.79911, y: -1.03766, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1407862024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407862021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eebf6146679ae194bb5ce3104b894021, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DebugRunInfo
---- !u!114 &1407862025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407862021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b31d67eacbde57442b46b37eec82f582, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  combatSceneName: SurvivalMode
-  shopSceneName: ShopScene
-  mainMenuSceneName: MainMenuScene
-  perkSlotCount: 3
 --- !u!1 &1435588434
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,10 +459,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 272118083330568659, guid: 71bface715db30a41acf039239acb578, type: 3}
-      propertyPath: debugAttackData
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.85758
@@ -559,6 +499,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2279807456985571553, guid: 71bface715db30a41acf039239acb578, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1194398703}
     - target: {fileID: 6979821183098404218, guid: 71bface715db30a41acf039239acb578, type: 3}
       propertyPath: m_Name
       value: Player
@@ -786,6 +730,5 @@ SceneRoots:
   - {fileID: 1825885732}
   - {fileID: 509018889}
   - {fileID: 1045439899}
-  - {fileID: 1407862023}
   - {fileID: 1623302962}
   - {fileID: 1353811424}
