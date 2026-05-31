@@ -17,6 +17,8 @@ public class EnemyHealth : MonoBehaviour
 
     public bool IsStunned { get; private set; }
 
+    private DamageNumberSpawner damageNumberSpawner;
+
     private void Update()
     {
         if (!IsStunned)
@@ -36,6 +38,8 @@ public class EnemyHealth : MonoBehaviour
     {
         health = GetComponent<Health>();
         coinSpawner = GetComponent<CoinSpawner>();
+        damageNumberSpawner = FindAnyObjectByType<DamageNumberSpawner>();
+        
     }
 
     private void OnEnable()
@@ -68,7 +72,13 @@ public class EnemyHealth : MonoBehaviour
     )
     {
         int finalDamage = attack.damage + GameManager.Instance.BonusDamage;
+
         health.TakeDamage(finalDamage);
+
+        if (damageNumberSpawner != null)
+        {
+            damageNumberSpawner.SpawnDamageNumber(finalDamage, hitPosition);
+        }
 
         if (dropCoinsOnHit && coinSpawner != null)
         {

@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
     public void ReturnToMainMenuAfterDeath()
     {
         ResetRunDataOnly();
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     public void ResetRunDataOnly()

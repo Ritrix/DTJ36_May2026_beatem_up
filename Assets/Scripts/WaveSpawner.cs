@@ -61,6 +61,10 @@ public class WaveSpawner : MonoBehaviour
         isSpawning = true;
         waveEnding = false;
 
+        bool halfHealthEnemies =
+            GameManager.Instance != null &&
+            GameManager.Instance.EnemiesStartHalfHealthNextRound;
+
         Debug.Log($"Wave {wave} started. Enemies: {enemiesToSpawn}");
 
         while (enemiesSpawned < enemiesToSpawn)
@@ -80,6 +84,11 @@ public class WaveSpawner : MonoBehaviour
             );
 
             yield return new WaitForSeconds(waitTime);
+        }
+
+        if (halfHealthEnemies && GameManager.Instance != null)
+        {
+            GameManager.Instance.ConsumeEnemiesHalfHealthEffect();
         }
 
         isSpawning = false;
@@ -117,7 +126,7 @@ public class WaveSpawner : MonoBehaviour
             return;
         }
 
-        GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        GameObject prefab = GetRandomAllowedEnemyPrefab();
 
         Vector3 spawnPosition;
 
@@ -145,6 +154,23 @@ public class WaveSpawner : MonoBehaviour
 
         aliveEnemies++;
 
+        EnemyHealth enemyHealth = enemyObject.GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.OnEnemyDied += HandleEnemyDied;
+        }
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.EnemiesStartHalfHealthNextRound)
+        {
+            Health enemyRawHealth = enemyObject.GetComponent<Health>();
+
+            if (enemyRawHealth != null)
+            {
+                enemyRawHealth.SetCurrentHealth(enemyRawHealth.MaxHealth / 2);
+            }
+        }
+
         EnemyBehaviour enemyBehaviour = enemyObject.GetComponent<EnemyBehaviour>();
         if (enemyBehaviour != null)
         {
@@ -156,12 +182,27 @@ public class WaveSpawner : MonoBehaviour
         {
             jumperBehaviour.SetPlayer(player);
         }
+    }
 
-        EnemyHealth enemyHealth = enemyObject.GetComponent<EnemyHealth>();
-        if (enemyHealth != null)
+    private GameObject GetRandomAllowedEnemyPrefab()
+    {
+        int wave = GameManager.Instance != null
+            ? GameManager.Instance.CurrentWave
+            : 1;
+
+        for (int attempts = 0; attempts < 20; attempts++)
         {
-            enemyHealth.OnEnemyDied += HandleEnemyDied;
+            GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+
+            bool isJumper = prefab.GetComponent<JumperBehaviour>() != null;
+
+            if (isJumper && wave < 4)
+                continue;
+
+            return prefab;
         }
+
+        return enemyPrefabs[0];
     }
 
     private Vector2 GetRandomJumperPosition()
