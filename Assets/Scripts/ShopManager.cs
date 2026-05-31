@@ -93,10 +93,14 @@ public class ShopManager : MonoBehaviour
         PerkData perk = GetWeightedPerk();
 
         ShopItem offer = ScriptableObject.CreateInstance<ShopItem>();
+
         offer.itemName = perk.perkName;
         offer.description = perk.description;
         offer.itemType = ShopItemType.Perk;
-        offer.baseCost = 100;
+
+        float rarityMultiplier = Mathf.Pow(1.6f, 7 - perk.weight);
+        offer.baseCost = Mathf.RoundToInt(600 * rarityMultiplier);
+
         offer.perk = perk;
 
         return offer;
@@ -126,10 +130,9 @@ public class ShopManager : MonoBehaviour
 
     private int GetCurrentCost(ShopItem item)
     {
-        Debug.Log($"Calculating cost for {item.itemName}");
         int purchaseCount = GameManager.Instance.GetPurchaseCount(item.itemName);
 
-        return item.baseCost + purchaseCount * 25;
+        return Mathf.RoundToInt(item.baseCost * Mathf.Pow(1.5f, purchaseCount));
     }
 
     private void ApplyItem(ShopItem item)
@@ -165,10 +168,7 @@ public class ShopManager : MonoBehaviour
                 break;
 
             case ShopItemType.OneUseItem:
-                if (!GameManager.Instance.TrySetHeldItem(item.oneUseItemType))
-                {
-                    Debug.Log("Could not buy item because player is already holding one.");
-                }
+                GameManager.Instance.TrySetHeldItem(item.oneUseItemType);
                 break;
 
             case ShopItemType.ChallengeMode:
