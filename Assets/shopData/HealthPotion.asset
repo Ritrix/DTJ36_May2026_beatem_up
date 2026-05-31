@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Health Potion
   description: 'Use once any time: Restores 50% of health'
   itemType: 6
-  baseCost: 80
+  baseCost: 120
   value: 0
   weight: 10
   perk: {fileID: 0}

@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Fourth Perk Slot
   description: Unlocks a fourth perk slot.
   itemType: 5
-  baseCost: 1000
+  baseCost: 1500
   value: 0
   weight: 1
   perk: {fileID: 0}

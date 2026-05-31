@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Coin Magnetism
   description: Coins magentise to player after 2 seconds
   itemType: 7
-  baseCost: 500
+  baseCost: 750
   value: 0
   weight: 2
   perk: {fileID: 0}

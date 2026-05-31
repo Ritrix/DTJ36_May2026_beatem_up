@@ -2030,6 +2030,8 @@ MonoBehaviour:
   - {fileID: 1072961625}
   - {fileID: 1225079145}
   perkPopupUI: {fileID: 1355630707}
+  rampUpValueAllShopItems: 1.15
+  rampUpValuePerks: 1.5
 --- !u!4 &1020769716
 Transform:
   m_ObjectHideFlags: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Speed Up
   description: Permanently increases move speed by 2.
   itemType: 3
-  baseCost: 90
+  baseCost: 135
   value: 2
   weight: 7
   perk: {fileID: 0}
