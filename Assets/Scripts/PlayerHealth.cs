@@ -69,6 +69,10 @@ public class PlayerHealth : MonoBehaviour
 
     private void PlayHurtAnimation()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayPlayerHurt();
+        }
         if (hurtRoutine != null)
             StopCoroutine(hurtRoutine);
 

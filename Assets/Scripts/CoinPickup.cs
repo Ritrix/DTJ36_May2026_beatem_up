@@ -209,6 +209,10 @@ public class CoinPickup : MonoBehaviour
             : value;
 
         wallet.AddCoins(finalValue);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayCoinPickup();
+        }
 
         Destroy(gameObject);
     }
