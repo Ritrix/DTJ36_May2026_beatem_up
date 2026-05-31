@@ -287,8 +287,9 @@ public class PlayerCombat : MonoBehaviour
         if (movement != null)
         {
             movement.SetMovementLocked(false);
+            movement.RefreshMovementAnimation();
         }
-        PlayAnimationState("playerIdle");
+
         isAttacking = false;
         hitboxActive = false;
         canCancel = false;

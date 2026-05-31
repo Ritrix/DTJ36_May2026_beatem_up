@@ -8,29 +8,30 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private PlayerCombat combat;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string idleAnimationState = "Player_Idle";
+    [SerializeField] private string walkAnimationState = "Player_Walk";
+
     private Rigidbody2D rb;
     private Vector2 moveInput;
 
     private SpriteRenderer spriteRenderer;
 
+    private bool wasMoving;
+
     public bool FacingRight { get; private set; } = true;
     public bool MovementLocked { get; private set; }
 
-    public void SetMovementLocked(bool locked)
-    {
-        MovementLocked = locked;
-
-        if (locked)
-        {
-            rb.linearVelocity = Vector2.zero;
-        }
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        RefreshMovementAnimation();
     }
 
     private void FixedUpdate()
@@ -53,22 +54,78 @@ public class PlayerMovement : MonoBehaviour
             combat.SetMoveInput(moveInput);
         }
 
-        // Flip the sprite based on movement direction
         if (moveInput.x > 0.1f)
         {
             FacingRight = true;
-            spriteRenderer.flipX = false; // Facing right
+            spriteRenderer.flipX = false;
         }
         else if (moveInput.x < -0.1f)
         {
             FacingRight = false;
-            spriteRenderer.flipX = true; // Facing left
+            spriteRenderer.flipX = true;
+        }
+
+        HandleMovementAnimation();
+    }
+
+    public void SetMovementLocked(bool locked)
+    {
+        MovementLocked = locked;
+
+        if (locked)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+        else
+        {
+            RefreshMovementAnimation();
         }
     }
 
     public int FacingDirection()
     {
         return FacingRight ? 1 : -1;
+    }
+
+    public void RefreshMovementAnimation()
+    {
+        if (MovementLocked)
+            return;
+
+        bool isMoving = moveInput.sqrMagnitude > 0.01f;
+
+        wasMoving = isMoving;
+
+        if (isMoving)
+            PlayAnimationState(walkAnimationState);
+        else
+            PlayAnimationState(idleAnimationState);
+    }
+
+    private void HandleMovementAnimation()
+    {
+        if (MovementLocked)
+            return;
+
+        bool isMoving = moveInput.sqrMagnitude > 0.01f;
+
+        if (isMoving == wasMoving)
+            return;
+
+        wasMoving = isMoving;
+
+        if (isMoving)
+            PlayAnimationState(walkAnimationState);
+        else
+            PlayAnimationState(idleAnimationState);
+    }
+
+    private void PlayAnimationState(string stateName)
+    {
+        if (animator == null) return;
+        if (string.IsNullOrEmpty(stateName)) return;
+
+        animator.Play(stateName, 0, 0f);
     }
 
     private float GetMoveSpeed()

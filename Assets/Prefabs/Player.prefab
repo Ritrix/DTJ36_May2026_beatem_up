@@ -190,6 +190,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 8
   combat: {fileID: 272118083330568659}
+  animator: {fileID: 1623994745299311198}
+  idleAnimationState: playerIdle
+  walkAnimationState: Player_Walk
 --- !u!114 &8364126134767049495
 MonoBehaviour:
   m_ObjectHideFlags: 0
