@@ -33,6 +33,17 @@ public class EnemyBehaviour : MonoBehaviour
     [Header("Attack Delay")]
     [SerializeField] private float attackDelayAfterArriving = 1f;
 
+    [Header("Animation")]
+    [SerializeField] private string idleAnimationState = "Enemy_Idle";
+    [SerializeField] private string attackWindupAnimationState = "Enemy_AttackWindup";
+    [SerializeField] private string attackHitAnimationState = "Enemy_AttackHit";
+    [SerializeField] private float attackWindupTime = 0.35f;
+    [SerializeField] private float attackHitFrameTime = 0.15f;
+
+    private bool isAttacking;
+
+    private Vector3 startingScale;
+
     private bool wasInAttackPosition;
     private float arrivedTimer;
 
@@ -49,6 +60,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void Awake()
     {
+        startingScale = transform.localScale;
         anim = GetComponent<Animator>();
         enemyHealth = GetComponent<EnemyHealth>();
     }
@@ -60,6 +72,8 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void Start()
     {
+        PlayAnimationState(idleAnimationState);
+
         Invoke(nameof(EnableMovement), movementStartDelay);
         GenerateNewOffset();
     }
@@ -71,6 +85,9 @@ public class EnemyBehaviour : MonoBehaviour
         cooldownTimer += Time.deltaTime;
 
         FacePlayer();
+
+        if (isAttacking)
+            return;
 
         if (enemyHealth != null && enemyHealth.IsStunned)
             return;
@@ -206,27 +223,60 @@ public class EnemyBehaviour : MonoBehaviour
     {
         facingRight = player.position.x > transform.position.x;
 
-        float xScale = facingRight ? -2f : 2f;
-        transform.localScale = new Vector3(xScale, 2f, 2f);
+        float x = Mathf.Abs(startingScale.x);
+
+        if (!facingRight)
+            x *= -1f;
+
+        transform.localScale = new Vector3(
+            x,
+            startingScale.y,
+            startingScale.z
+        );
     }
 
     private void Attack()
     {
-
+        if (isAttacking) return;
         if (cooldownTimer < attackCooldown) return;
+
         arrivedTimer = 0f;
         wasInAttackPosition = false;
 
-        Debug.Log($"{name} attacks.");
-
         cooldownTimer = 0f;
 
-        if (anim != null)
-        {
-            anim.SetTrigger("meleeAttack");
-        }
+        StartCoroutine(AttackRoutine());
+
+
+    }
+
+    private System.Collections.IEnumerator AttackRoutine()
+    {
+        isAttacking = true;
+
+        Debug.Log($"{name} attacks.");
+
+        PlayAnimationState(attackWindupAnimationState);
+
+        yield return new WaitForSeconds(attackWindupTime);
+
+        PlayAnimationState(attackHitAnimationState);
 
         HitPlayer();
+
+        yield return new WaitForSeconds(attackHitFrameTime);
+
+        PlayAnimationState(idleAnimationState);
+
+        isAttacking = false;
+    }
+
+    private void PlayAnimationState(string stateName)
+    {
+        if (anim == null) return;
+        if (string.IsNullOrEmpty(stateName)) return;
+
+        anim.Play(stateName, 0, 0f);
     }
 
     private void HitPlayer()
