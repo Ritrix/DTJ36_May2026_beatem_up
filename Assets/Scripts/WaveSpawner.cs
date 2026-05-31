@@ -9,17 +9,25 @@ public class WaveSpawner : MonoBehaviour
     [SerializeField] private Transform[] spawnPoints;
 
     [Header("Wave Scaling")]
-    [SerializeField] private int baseEnemyCount = 3;
+    [SerializeField] private int baseEnemyCount = 4;
+    [SerializeField] private int enemiesAddedPerWave = 2;
+
+    [Header("Max Alive Scaling")]
+    [SerializeField] private int startingMaxAliveEnemies = 2;
+    [SerializeField] private int maxAliveEnemiesAddedPerWave = 1;
+    [SerializeField] private int maxAliveEnemiesCap = 12;
 
     [Header("Spawn Rate")]
     [SerializeField] private float startingMinSpawnInterval = 1.5f;
     [SerializeField] private float startingMaxSpawnInterval = 3f;
     [SerializeField] private float minSpawnIntervalCap = 0.25f;
     [SerializeField] private float maxSpawnIntervalCap = 0.8f;
-    [SerializeField] private float spawnRateIncreasePerWave = 0.12f;
     [SerializeField] private float spawnIntervalMultiplierPerWave = 0.85f;
-    [SerializeField] private int maxAliveEnemies = 20;
-    private int aliveEnemies;
+
+    [Header("Jumper Scaling")]
+    [SerializeField] private int jumperFirstWave = 4;
+    [SerializeField] private int jumperMaxStartingCount = 1;
+    [SerializeField] private int jumperMaxAddedPerWave = 1;
 
     [Header("Jumper Spawn Area")]
     [SerializeField] private Vector2 jumperSpawnCenter;
@@ -27,16 +35,23 @@ public class WaveSpawner : MonoBehaviour
 
     [Header("Timing")]
     [SerializeField] private float startDelay = 2f;
-    [SerializeField] private float endWaveDelay = 2f;
+    [SerializeField] private float endWaveDelay = 10f;
+
+    [Header("Survival Scaling")]
+    [SerializeField] private bool survivalMode = true;
+    [SerializeField] private int healthIncreaseEveryXRounds = 3;
+    [SerializeField] private int healthIncreaseAmount = 25;
 
     private int enemiesToSpawn;
     private int enemiesSpawned;
     private int enemiesDefeated;
+    private int aliveEnemies;
+    private int jumpersSpawnedThisWave;
 
     private bool isSpawning;
     private bool waveEnding;
-
     private bool waveStarted;
+    private bool halfHealthThisWave;
 
     private void Start()
     {
@@ -46,37 +61,54 @@ public class WaveSpawner : MonoBehaviour
     private IEnumerator SpawnWave()
     {
         waveStarted = false;
+        isSpawning = true;
+        waveEnding = false;
 
         yield return new WaitForSeconds(startDelay);
-
-        waveStarted = true;
 
         int wave = GameManager.Instance != null
             ? GameManager.Instance.CurrentWave
             : 1;
-        GameManager.Instance.BeginRoundEffects();
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.BeginRoundEffects();
+        }
 
         enemiesToSpawn = GetEnemyCountForWave(wave);
         enemiesSpawned = 0;
         enemiesDefeated = 0;
-        isSpawning = true;
-        waveEnding = false;
+        aliveEnemies = 0;
+        jumpersSpawnedThisWave = 0;
 
-        bool halfHealthEnemies =
+        halfHealthThisWave =
             GameManager.Instance != null &&
             GameManager.Instance.EnemiesStartHalfHealthNextRound;
 
-        Debug.Log($"Wave {wave} started. Enemies: {enemiesToSpawn}");
+        if (halfHealthThisWave && GameManager.Instance != null)
+        {
+            GameManager.Instance.ConsumeEnemiesHalfHealthEffect();
+        }
+
+        int currentMaxAliveEnemies = GetMaxAliveEnemiesForWave(wave);
+
+        Debug.Log(
+            $"Wave {wave} started. " +
+            $"Total enemies: {enemiesToSpawn}, " +
+            $"Max alive: {currentMaxAliveEnemies}, " +
+            $"Max jumpers: {GetMaxJumpersForWave(wave)}"
+        );
+
+        waveStarted = true;
 
         while (enemiesSpawned < enemiesToSpawn)
         {
-            if (aliveEnemies >= maxAliveEnemies)
+            while (aliveEnemies >= currentMaxAliveEnemies)
             {
                 yield return null;
-                continue;
             }
 
-            SpawnEnemy();
+            SpawnEnemy(wave);
             enemiesSpawned++;
 
             float waitTime = Random.Range(
@@ -85,11 +117,6 @@ public class WaveSpawner : MonoBehaviour
             );
 
             yield return new WaitForSeconds(waitTime);
-        }
-
-        if (halfHealthEnemies && GameManager.Instance != null)
-        {
-            GameManager.Instance.ConsumeEnemiesHalfHealthEffect();
         }
 
         isSpawning = false;
@@ -120,7 +147,7 @@ public class WaveSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnEnemy()
+    private void SpawnEnemy(int wave)
     {
         if (enemyPrefabs.Length == 0)
         {
@@ -128,7 +155,7 @@ public class WaveSpawner : MonoBehaviour
             return;
         }
 
-        GameObject prefab = GetRandomAllowedEnemyPrefab();
+        GameObject prefab = GetRandomAllowedEnemyPrefab(wave);
 
         Vector3 spawnPosition;
 
@@ -162,15 +189,27 @@ public class WaveSpawner : MonoBehaviour
             enemyHealth.OnEnemyDied += HandleEnemyDied;
         }
 
-        if (GameManager.Instance != null &&
-            GameManager.Instance.EnemiesStartHalfHealthNextRound)
+        Health enemyRawHealth = enemyObject.GetComponent<Health>();
+        if (enemyRawHealth != null)
         {
-            Health enemyRawHealth = enemyObject.GetComponent<Health>();
+            int bonusHealth = GetEnemyBonusHealthForCurrentWave();
 
-            if (enemyRawHealth != null)
+            if (bonusHealth > 0)
             {
-                enemyRawHealth.SetCurrentHealth(enemyRawHealth.MaxHealth / 2);
+                enemyRawHealth.SetMaxHealth(enemyRawHealth.MaxHealth + bonusHealth, true);
             }
+
+            if (halfHealthThisWave)
+            {
+                enemyRawHealth.SetCurrentHealth(
+                    Mathf.CeilToInt(enemyRawHealth.MaxHealth * 0.5f)
+                );
+            }
+
+            Debug.Log(
+                $"{enemyObject.name} spawned with health " +
+                $"{enemyRawHealth.CurrentHealth}/{enemyRawHealth.MaxHealth}"
+            );
         }
 
         EnemyBehaviour enemyBehaviour = enemyObject.GetComponent<EnemyBehaviour>();
@@ -186,25 +225,117 @@ public class WaveSpawner : MonoBehaviour
         }
     }
 
-    private GameObject GetRandomAllowedEnemyPrefab()
+    private void HandleEnemyDied(EnemyHealth enemy)
     {
-        int wave = GameManager.Instance != null
-            ? GameManager.Instance.CurrentWave
-            : 1;
+        enemy.OnEnemyDied -= HandleEnemyDied;
 
-        for (int attempts = 0; attempts < 20; attempts++)
+        enemiesDefeated++;
+        aliveEnemies--;
+
+        aliveEnemies = Mathf.Max(0, aliveEnemies);
+
+        Debug.Log($"Enemy defeated. {enemiesDefeated}/{enemiesToSpawn}");
+    }
+
+    private int GetEnemyCountForWave(int wave)
+    {
+        int count = baseEnemyCount + ((wave - 1) * enemiesAddedPerWave);
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.ChallengeModeActiveThisRound)
+        {
+            count *= 3;
+        }
+
+        return count;
+    }
+
+    private int GetMaxAliveEnemiesForWave(int wave)
+    {
+        int increaseSteps = (wave - 1) / 2;
+
+        int maxAlive = startingMaxAliveEnemies +
+                       (increaseSteps * maxAliveEnemiesAddedPerWave);
+
+        return Mathf.Min(maxAlive, maxAliveEnemiesCap);
+    }
+
+    private int GetMaxJumpersForWave(int wave)
+    {
+        if (wave < jumperFirstWave)
+            return 0;
+
+        int jumperCount = jumperMaxStartingCount +
+                          ((wave - jumperFirstWave) * jumperMaxAddedPerWave);
+
+        return jumperCount;
+    }
+
+    private GameObject GetRandomAllowedEnemyPrefab(int wave)
+    {
+        int maxJumpersThisWave = GetMaxJumpersForWave(wave);
+
+        for (int attempts = 0; attempts < 30; attempts++)
         {
             GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
 
             bool isJumper = prefab.GetComponent<JumperBehaviour>() != null;
 
-            if (isJumper && wave < 4)
-                continue;
+            if (isJumper)
+            {
+                if (wave < jumperFirstWave)
+                    continue;
+
+                if (jumpersSpawnedThisWave >= maxJumpersThisWave)
+                    continue;
+
+                jumpersSpawnedThisWave++;
+                return prefab;
+            }
 
             return prefab;
         }
 
+        return GetFallbackNonJumperPrefab();
+    }
+
+    private GameObject GetFallbackNonJumperPrefab()
+    {
+        foreach (GameObject prefab in enemyPrefabs)
+        {
+            if (prefab.GetComponent<JumperBehaviour>() == null)
+                return prefab;
+        }
+
         return enemyPrefabs[0];
+    }
+
+    private int GetEnemyBonusHealthForCurrentWave()
+    {
+        if (!survivalMode) return 0;
+        if (GameManager.Instance == null) return 0;
+
+        int wave = GameManager.Instance.CurrentWave;
+
+        int increaseSteps = (wave - 1) / healthIncreaseEveryXRounds;
+
+        return increaseSteps * healthIncreaseAmount;
+    }
+
+    private float GetMinSpawnInterval(int wave)
+    {
+        float interval = startingMinSpawnInterval *
+                         Mathf.Pow(spawnIntervalMultiplierPerWave, wave - 1);
+
+        return Mathf.Max(interval, minSpawnIntervalCap);
+    }
+
+    private float GetMaxSpawnInterval(int wave)
+    {
+        float interval = startingMaxSpawnInterval *
+                         Mathf.Pow(spawnIntervalMultiplierPerWave, wave - 1);
+
+        return Mathf.Max(interval, maxSpawnIntervalCap);
     }
 
     private Vector2 GetRandomJumperPosition()
@@ -222,38 +353,9 @@ public class WaveSpawner : MonoBehaviour
         return new Vector2(x, y);
     }
 
-    private void HandleEnemyDied(EnemyHealth enemy)
+    private void OnDrawGizmosSelected()
     {
-        enemy.OnEnemyDied -= HandleEnemyDied;
-
-        enemiesDefeated++;
-        aliveEnemies--;
-
-        Debug.Log($"Enemy defeated. {enemiesDefeated}/{enemiesToSpawn}");
-    }
-
-    private int GetEnemyCountForWave(int wave)
-    {
-        int count = baseEnemyCount * (int)Mathf.Pow(2, wave - 1);
-
-        if (GameManager.Instance != null &&
-            GameManager.Instance.ChallengeModeActiveThisRound)
-        {
-            count *= 3;
-        }
-
-        return count;
-    }
-
-    private float GetMinSpawnInterval(int wave)
-    {
-        float interval = startingMinSpawnInterval * Mathf.Pow(spawnIntervalMultiplierPerWave, wave - 1);
-        return Mathf.Max(interval, minSpawnIntervalCap);
-    }
-
-    private float GetMaxSpawnInterval(int wave)
-    {
-        float interval = startingMaxSpawnInterval * Mathf.Pow(spawnIntervalMultiplierPerWave, wave - 1);
-        return Mathf.Max(interval, maxSpawnIntervalCap);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(jumperSpawnCenter, jumperSpawnSize);
     }
 }

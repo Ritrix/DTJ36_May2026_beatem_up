@@ -30,6 +30,12 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private Vector2 attackHitboxOffset = new Vector2(0.8f, 0f);
     [SerializeField] private LayerMask playerLayer;
 
+    [Header("Attack Delay")]
+    [SerializeField] private float attackDelayAfterArriving = 1f;
+
+    private bool wasInAttackPosition;
+    private float arrivedTimer;
+
     private Animator anim;
     private EnemyHealth enemyHealth;
 
@@ -83,7 +89,11 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (IsInAttackPosition())
         {
-            Attack();
+            if (CanAttackAfterArrivalDelay())
+            {
+                Attack();
+            }
+
             return;
         }
 
@@ -91,6 +101,29 @@ public class EnemyBehaviour : MonoBehaviour
         {
             MoveToAttackPosition();
         }
+    }
+
+    private bool CanAttackAfterArrivalDelay()
+    {
+        bool inAttackPosition = IsInAttackPosition();
+
+        if (!inAttackPosition)
+        {
+            wasInAttackPosition = false;
+            arrivedTimer = 0f;
+            return false;
+        }
+
+        if (!wasInAttackPosition)
+        {
+            wasInAttackPosition = true;
+            arrivedTimer = 0f;
+            return false;
+        }
+
+        arrivedTimer += Time.deltaTime;
+
+        return arrivedTimer >= attackDelayAfterArriving;
     }
 
     private void RefreshOffsetIfNeeded()
@@ -179,7 +212,10 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void Attack()
     {
+
         if (cooldownTimer < attackCooldown) return;
+        arrivedTimer = 0f;
+        wasInAttackPosition = false;
 
         Debug.Log($"{name} attacks.");
 

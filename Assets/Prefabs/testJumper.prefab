@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 5239172292223930535}
   - component: {fileID: 5983764929596951838}
   - component: {fileID: 8338764657874056606}
-  - component: {fileID: 6276326741589558950}
   - component: {fileID: 4196516429592014682}
   m_Layer: 7
   m_Name: testJumper
@@ -135,6 +134,8 @@ MonoBehaviour:
   windupHopDuration: 0.35
   diveDuration: 0.55
   diveHeight: 1.2
+  autoDropInSurvival: 1
+  autoDropDelay: 20
 --- !u!61 &6383693279364376996
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -234,20 +235,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   dropCoinsOnHit: 1
-  dropCoinsOnDeath: 1
---- !u!114 &6276326741589558950
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5692046016314906837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c645b913b62df634fbbb7ed76004d384, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 100
+  dropCoinsOnDeath: 0
 --- !u!114 &4196516429592014682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,7 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CoinSpawner
   coinPrefab: {fileID: 5396210956603099952, guid: 8de1b84f6fc565346ba116d1c4fcf4d4, type: 3}
   minCoins: 3
-  maxCoins: 8
+  maxCoins: 7
   bronzeChance: 0.7
   silverChance: 0.22
   goldChance: 0.07

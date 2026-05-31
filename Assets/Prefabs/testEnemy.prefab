@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyBehaviour
   player: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
-  moveSpeed: 3
+  moveSpeed: 5
   movementStartDelay: 1
   desiredXDistance: 1.3
   xTolerance: 0.35
@@ -127,6 +127,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
+  attackDelayAfterArriving: 1
 --- !u!50 &7034532979436370687
 Rigidbody2D:
   serializedVersion: 5

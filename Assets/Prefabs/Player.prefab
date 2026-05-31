@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b161e9f2cc795f4f8b96a5b83cdead8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 5
+  moveSpeed: 8
   combat: {fileID: 272118083330568659}
 --- !u!114 &8364126134767049495
 MonoBehaviour:

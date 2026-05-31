@@ -54,6 +54,12 @@ public class JumperBehaviour : MonoBehaviour
     [SerializeField] private float diveDuration = 0.55f;
     [SerializeField] private float diveHeight = 1.2f;
 
+    [Header("Survival Auto Drop")]
+    [SerializeField] private bool autoDropInSurvival = true;
+    [SerializeField] private float autoDropDelay = 20f;
+
+    private float hiddenTimer;
+
     private JumperState state = JumperState.Hidden;
 
     private bool hasHitPlayerThisAttack;
@@ -82,8 +88,7 @@ public class JumperBehaviour : MonoBehaviour
         switch (state)
         {
             case JumperState.Hidden:
-                if (PlayerBelow())
-                    StartCoroutine(FadeInThenDrop());
+                HandleHiddenState();
                 break;
 
             case JumperState.Dropping:
@@ -95,6 +100,41 @@ public class JumperBehaviour : MonoBehaviour
                 break;
 
         }
+    }
+
+    private void HandleHiddenState()
+    {
+        hiddenTimer += Time.deltaTime;
+
+        if (PlayerBelow())
+        {
+            hiddenTimer = 0f;
+            StartCoroutine(FadeInThenDrop());
+            return;
+        }
+
+        if (autoDropInSurvival && hiddenTimer >= autoDropDelay)
+        {
+            hiddenTimer = 0f;
+            ForceDropNearPlayer();
+        }
+    }
+
+    private void ForceDropNearPlayer()
+    {
+        if (player == null) return;
+
+        Vector3 dropPosition = transform.position;
+
+        dropPosition.x = player.position.x + Random.Range(-1.5f, 1.5f);
+        dropPosition.y = player.position.y + 5f;
+        dropPosition.z = transform.position.z;
+
+        transform.position = dropPosition;
+
+        Debug.Log($"{name} auto-dropping after hidden timeout.");
+
+        StartCoroutine(FadeInThenDrop());
     }
 
     public void SetPlayer(Transform newPlayer)

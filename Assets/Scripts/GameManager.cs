@@ -54,6 +54,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        BonusMaxHealth = 400;
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }

@@ -17,8 +17,9 @@ public class SimpleBeatEmUpCamera : MonoBehaviour
     [SerializeField, Range(0f, 0.49f)] private float deadzoneY = 0.25f;
 
     [Header("Zoom")]
-    [SerializeField] private float targetZoom = 5f;
+    [SerializeField] private float targetZoom = 7f;
     [SerializeField] private float zoomSmooth = 8f;
+    [SerializeField] private float targetZoomReset = 7f;
 
     [Header("Screen Shake")]
     [SerializeField] private float maxShake = 0.35f;
@@ -37,7 +38,7 @@ public class SimpleBeatEmUpCamera : MonoBehaviour
             Debug.LogWarning("SimpleBeatEmUpCamera expects an orthographic camera.");
         }
 
-        targetZoom = cam.orthographicSize;
+        //targetZoom = cam.orthographicSize;
     }
 
     private void LateUpdate()
@@ -123,7 +124,7 @@ public class SimpleBeatEmUpCamera : MonoBehaviour
 
     public void ResetZoom()
     {
-        targetZoom = 5f;
+        targetZoom = targetZoomReset;
     }
 
     public void Shake(float amount)

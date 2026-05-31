@@ -19,6 +19,9 @@ public class ShopManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private PerkPopupUI perkPopupUI;
 
+    [Header("UI")]
+    [SerializeField] private float rampUpValue = 1.2f;
+
     private void Start()
     {
         GenerateShop();
@@ -133,7 +136,22 @@ public class ShopManager : MonoBehaviour
     {
         int purchaseCount = GameManager.Instance.GetPurchaseCount(item.itemName);
 
-        return Mathf.RoundToInt(item.baseCost * Mathf.Pow(1.5f, purchaseCount));
+        float purchaseMultiplier = Mathf.Pow(1.5f, purchaseCount);
+
+        int currentWave = GameManager.Instance != null
+            ? GameManager.Instance.CurrentWave
+            : 1;
+
+        float roundMultiplier = GetRoundPriceMultiplier(currentWave);
+
+        return Mathf.RoundToInt(item.baseCost * purchaseMultiplier * roundMultiplier);
+    }
+
+    private float GetRoundPriceMultiplier(int wave)
+    {
+        float multiplier = Mathf.Pow(rampUpValue, wave - 1);
+
+        return Mathf.Min(multiplier, 100f);
     }
 
     private void ApplyItem(ShopItem item)
