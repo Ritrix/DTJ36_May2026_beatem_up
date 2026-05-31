@@ -15,9 +15,11 @@ MonoBehaviour:
   strength: 1
   direction: 1
   damage: 20
-  attackDuration: 0.45
-  hitboxStartTime: 0.15
-  hitboxEndTime: 0.3
+  attackDuration: 0.7
+  hitboxStartTime: 0.3
+  hitboxEndTime: 0.55
   hitboxOffset: {x: 2, y: 0}
   hitboxSize: {x: 2, y: 2}
-  animationName: 
+  stunDuration: 0.3
+  windUpAnimationState: 1PunchWindup
+  hitAnimationState: 2kickHit

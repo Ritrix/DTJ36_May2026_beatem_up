@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   dropCoinsOnHit: 1
-  dropCoinsOnDeath: 1
+  dropCoinsOnDeath: 0
 --- !u!61 &8131512089587150540
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -240,8 +240,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinSpawner
   coinPrefab: {fileID: 5396210956603099952, guid: 8de1b84f6fc565346ba116d1c4fcf4d4, type: 3}
-  minCoins: 5
-  maxCoins: 15
+  minCoins: 2
+  maxCoins: 5
   bronzeChance: 0.7
   silverChance: 0.22
   goldChance: 0.07

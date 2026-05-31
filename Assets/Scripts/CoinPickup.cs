@@ -117,9 +117,11 @@ public class CoinPickup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log($"Coin collided with {other.name}, can pickup: {canPickup}");
         if (!canPickup) return;
 
         PlayerWallet wallet = other.GetComponent<PlayerWallet>();
+        Debug.Log($"wallet found: {wallet != null}");
         if (wallet == null) return;
 
         wallet.AddCoins(value);

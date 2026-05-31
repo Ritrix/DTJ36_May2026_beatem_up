@@ -67,7 +67,8 @@ public class EnemyHealth : MonoBehaviour
         int hitDirection
     )
     {
-        health.TakeDamage(attack.damage);
+        int finalDamage = attack.damage + GameManager.Instance.BonusDamage;
+        health.TakeDamage(finalDamage);
 
         if (dropCoinsOnHit && coinSpawner != null)
         {

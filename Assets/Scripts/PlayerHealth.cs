@@ -5,6 +5,8 @@ public class PlayerHealth : MonoBehaviour
 {
     private Health health;
 
+    [SerializeField] private int playerMaxHealthBase = 100;
+
     private void Awake()
     {
         health = GetComponent<Health>();
@@ -24,6 +26,8 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
+        int finalMaxHealth = playerMaxHealthBase + GameManager.Instance.BonusMaxHealth;
+        health.SetMaxHealth(finalMaxHealth);
         UpdateHealthUI(health.CurrentHealth, health.MaxHealth);
     }
 
@@ -40,5 +44,10 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player died.");
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ReturnToMainMenuAfterDeath();
+        }
     }
 }

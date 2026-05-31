@@ -261,8 +261,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinSpawner
   coinPrefab: {fileID: 5396210956603099952, guid: 8de1b84f6fc565346ba116d1c4fcf4d4, type: 3}
-  minCoins: 5
-  maxCoins: 15
+  minCoins: 3
+  maxCoins: 8
   bronzeChance: 0.7
   silverChance: 0.22
   goldChance: 0.07
