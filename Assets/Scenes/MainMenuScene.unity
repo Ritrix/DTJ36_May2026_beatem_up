@@ -927,6 +927,7 @@ MonoBehaviour:
   jumperJump: {fileID: 8300000, guid: a4088a2b17812fa408a5236e0f60f080, type: 3}
   jumperFall: {fileID: 8300000, guid: aa47c15c9f362ba40adf3d1b48a06370, type: 3}
   enemyHurt: {fileID: 8300000, guid: 760d7f14881cd5744b6aeb08e7e084c9, type: 3}
+  coinPickup: {fileID: 8300000, guid: 0c096ebb1cac31942a8f3dfbe4156635, type: 3}
 --- !u!4 &972228909
 Transform:
   m_ObjectHideFlags: 0
