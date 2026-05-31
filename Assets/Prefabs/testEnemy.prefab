@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 832027279754468402}
   - component: {fileID: 8131512089587150540}
   - component: {fileID: 8343838606725989470}
+  - component: {fileID: 5345501055686114302}
+  - component: {fileID: 6737016825868680387}
   m_Layer: 7
   m_Name: testEnemy
   m_TagString: Untagged
@@ -33,7 +35,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.32, y: -0.23, z: 0}
-  m_LocalScale: {x: 2.676, y: 2.762, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -87,8 +89,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: e76c91a60e7ef424ea61a4c767256e3f, type: 3}
-  m_Color: {r: 0.12936096, g: 0.5377358, b: 0.23011462, a: 1}
+  m_Sprite: {fileID: 7672753588908762872, guid: 32cdca01487102842b43b468251aadd1, type: 3}
+  m_Color: {r: 1, g: 0.030305512, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -128,6 +130,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   attackDelayAfterArriving: 1
+  idleAnimationState: Enemy_Idle
+  attackWindupAnimationState: Enemy_AttackWindup
+  attackHitAnimationState: Enemy_AttackHit
+  attackWindupTime: 0.35
+  attackHitFrameTime: 0.15
 --- !u!50 &7034532979436370687
 Rigidbody2D:
   serializedVersion: 5
@@ -182,6 +189,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   dropCoinsOnHit: 1
   dropCoinsOnDeath: 0
+  anim: {fileID: 0}
+  damagedAnimationState: Enemy_Damaged
+  idleAnimationState: Enemy_Idle
+  damagedFrameTime: 0.12
 --- !u!61 &8131512089587150540
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -216,17 +227,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.07440019, y: -0.5845709}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.64, y: 0.64}
+    oldSize: {x: 1.4, y: 4.61}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.64, y: 0.64}
+  m_Size: {x: 1.2139428, y: 3.3821697}
   m_EdgeRadius: 0
 --- !u!114 &8343838606725989470
 MonoBehaviour:
@@ -248,3 +259,41 @@ MonoBehaviour:
   goldChance: 0.07
   redChance: 0.01
   spawnOffset: {x: 0, y: 0.5}
+--- !u!95 &5345501055686114302
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8048615352662986824}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 23f24dc0a5e44a649a3a316c7ae0350b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6737016825868680387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8048615352662986824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b60ed99332115f44855457abf32d2c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
+  animator: {fileID: 5345501055686114302}
+  idleAnimationState: Enemy_Idle
+  damagedAnimationState: Enemy_Damaged
+  damagedFrameTime: 0.25

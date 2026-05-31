@@ -56,7 +56,7 @@ public class JumperBehaviour : MonoBehaviour
 
     [Header("Survival Auto Drop")]
     [SerializeField] private bool autoDropInSurvival = true;
-    [SerializeField] private float autoDropDelay = 20f;
+    [SerializeField] private float autoDropDelay = 10f;
 
     private float hiddenTimer;
 
@@ -76,7 +76,7 @@ public class JumperBehaviour : MonoBehaviour
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
 
-        SetAlpha(0f);
+        SetAlpha(0.05f);
     }
 
     private void Update()

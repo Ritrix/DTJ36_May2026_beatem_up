@@ -7,6 +7,14 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private bool dropCoinsOnHit = false;
     [SerializeField] private bool dropCoinsOnDeath = true;
 
+    [Header("Animation")]
+    [SerializeField] private Animator anim;
+    [SerializeField] private string damagedAnimationState = "Enemy_Damaged";
+    [SerializeField] private string idleAnimationState = "Enemy_Idle";
+    [SerializeField] private float damagedFrameTime = 0.12f;
+
+    private EnemyAnimation enemyAnimation;
+
     public event System.Action<EnemyHealth> OnEnemyDied;
     private bool hasDied;
 
@@ -36,6 +44,7 @@ public class EnemyHealth : MonoBehaviour
 
     private void Awake()
     {
+        enemyAnimation = GetComponent<EnemyAnimation>();
         health = GetComponent<Health>();
         coinSpawner = GetComponent<CoinSpawner>();
         damageNumberSpawner = FindAnyObjectByType<DamageNumberSpawner>();
@@ -79,6 +88,11 @@ public class EnemyHealth : MonoBehaviour
             : attack.damage;
 
         health.TakeDamage(finalDamage);
+
+        if (enemyAnimation != null)
+        {
+            enemyAnimation.PlayDamaged();
+        }
 
         if (GameManager.Instance != null &&
             GameManager.Instance.HasPerk(PerkType.ExplosiveStrikes))
