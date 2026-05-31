@@ -58,6 +58,17 @@ public class JumperBehaviour : MonoBehaviour
     [SerializeField] private bool autoDropInSurvival = true;
     [SerializeField] private float autoDropDelay = 10f;
 
+    [Header("Sprites")]
+    [SerializeField] private Sprite ceilingSprite;
+    [SerializeField] private Sprite cannonballSprite;
+    [SerializeField] private Sprite hopSprite;
+    [SerializeField] private Sprite hurtSprite;
+
+    [Header("Cannonball Spin")]
+    [SerializeField] private bool spinCannonball = true;
+    [SerializeField] private float spinSpeed = 720f;
+
+    private Vector3 startingScale;
     private float hiddenTimer;
 
     private JumperState state = JumperState.Hidden;
@@ -76,6 +87,10 @@ public class JumperBehaviour : MonoBehaviour
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
 
+        startingScale = transform.localScale;
+
+        SetSprite(ceilingSprite);
+        ResetRotation();
         SetAlpha(0.05f);
     }
 
@@ -92,14 +107,23 @@ public class JumperBehaviour : MonoBehaviour
                 break;
 
             case JumperState.Dropping:
+                SpinCannonball();
                 HandleDrop();
+                break;
+
+            case JumperState.Dashing:
+                SpinCannonball();
                 break;
 
             case JumperState.Windup:
                 FacePlayer();
                 break;
-
         }
+    }
+
+    public void SetPlayer(Transform newPlayer)
+    {
+        player = newPlayer;
     }
 
     private void HandleHiddenState()
@@ -137,14 +161,12 @@ public class JumperBehaviour : MonoBehaviour
         StartCoroutine(FadeInThenDrop());
     }
 
-    public void SetPlayer(Transform newPlayer)
-    {
-        player = newPlayer;
-    }
-
     private IEnumerator FadeInThenDrop()
     {
         state = JumperState.FadingIn;
+
+        SetSprite(ceilingSprite);
+        ResetRotation();
 
         float timer = 0f;
 
@@ -158,6 +180,10 @@ public class JumperBehaviour : MonoBehaviour
         SetAlpha(1f);
 
         hasHitPlayerThisAttack = false;
+
+        SetSprite(ceilingSprite);
+        ResetRotation();
+
         state = JumperState.Dropping;
     }
 
@@ -180,6 +206,9 @@ public class JumperBehaviour : MonoBehaviour
     private IEnumerator WindupThenDash()
     {
         state = JumperState.Windup;
+
+        SetSprite(hopSprite);
+        ResetRotation();
 
         for (int i = 0; i < windupHopCount; i++)
         {
@@ -209,6 +238,9 @@ public class JumperBehaviour : MonoBehaviour
             player.position.x + attackDirection * dashPastPlayerDistance,
             player.position.y
         );
+
+        SetSprite(cannonballSprite);
+        ResetRotation();
 
         yield return StartCoroutine(ArcMove(
             dashStart,
@@ -277,6 +309,9 @@ public class JumperBehaviour : MonoBehaviour
     {
         state = JumperState.Recovering;
 
+        SetSprite(hopSprite);
+        ResetRotation();
+
         yield return new WaitForSeconds(recoverTime);
 
         StartCoroutine(WindupThenDash());
@@ -321,6 +356,9 @@ public class JumperBehaviour : MonoBehaviour
     {
         state = JumperState.Stunned;
 
+        SetSprite(hurtSprite);
+        ResetRotation();
+
         hasHitPlayerThisAttack = true;
 
         Vector2 start = transform.position;
@@ -357,6 +395,9 @@ public class JumperBehaviour : MonoBehaviour
 
         hasHitPlayerThisAttack = false;
 
+        SetSprite(hopSprite);
+        ResetRotation();
+
         StartCoroutine(WindupThenDash());
     }
 
@@ -376,10 +417,44 @@ public class JumperBehaviour : MonoBehaviour
 
     private void FacePlayer()
     {
+        if (player == null) return;
+
         bool facingRight = player.position.x > transform.position.x;
 
-        float xScale = facingRight ? 2f : -2f;
-        transform.localScale = new Vector3(xScale, 2f, 2f);
+        float x = Mathf.Abs(startingScale.x);
+
+        if (facingRight)
+            x *= -1f;
+
+        transform.localScale = new Vector3(
+            x,
+            startingScale.y,
+            startingScale.z
+        );
+    }
+
+    private void SetSprite(Sprite sprite)
+    {
+        if (spriteRenderer == null) return;
+        if (sprite == null) return;
+
+        spriteRenderer.sprite = sprite;
+    }
+
+    private void SpinCannonball()
+    {
+        if (!spinCannonball) return;
+
+        transform.Rotate(
+            0f,
+            0f,
+            spinSpeed * Time.deltaTime
+        );
+    }
+
+    private void ResetRotation()
+    {
+        transform.rotation = Quaternion.identity;
     }
 
     private void SetAlpha(float alpha)
