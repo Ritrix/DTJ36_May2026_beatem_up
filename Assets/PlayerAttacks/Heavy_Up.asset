@@ -15,9 +15,11 @@ MonoBehaviour:
   strength: 1
   direction: 2
   damage: 25
-  attackDuration: 0.5
-  hitboxStartTime: 0.2
-  hitboxEndTime: 0.35
-  hitboxOffset: {x: 0, y: 2}
-  hitboxSize: {x: 2, y: 1}
-  animationName: 
+  attackDuration: 0.8
+  hitboxStartTime: 0.35
+  hitboxEndTime: 0.6
+  hitboxOffset: {x: 0.4, y: 1}
+  hitboxSize: {x: 2, y: 3}
+  stunDuration: 0.5
+  windUpAnimationState: 1PunchWindup
+  hitAnimationState: OverHeadHeavyHit

@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
   strength: 0
   direction: 3
-  damage: 10
-  attackDuration: 0.25
-  hitboxStartTime: 0.07
-  hitboxEndTime: 0.16
-  hitboxOffset: {x: 1.5, y: -1}
-  hitboxSize: {x: 1.5, y: 0.5}
-  animationName: 
+  damage: 11
+  attackDuration: 0.4
+  hitboxStartTime: 0.15
+  hitboxEndTime: 0.32
+  hitboxOffset: {x: 1.5, y: -0.5}
+  hitboxSize: {x: 1.7, y: 1.5}
+  stunDuration: 0.3
+  windUpAnimationState: 1PunchWindup
+  hitAnimationState: OverheadHeavyWindup

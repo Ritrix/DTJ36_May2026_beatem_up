@@ -19,8 +19,9 @@ public class ShopManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private PerkPopupUI perkPopupUI;
 
-    [Header("UI")]
-    [SerializeField] private float rampUpValue = 1.2f;
+    [Header("ramp ups")]
+    [SerializeField] private float rampUpValueAllShopItems = 1.2f;
+    [SerializeField] private float rampUpValuePerks = 1.6f;
 
     private void Start()
     {
@@ -102,7 +103,7 @@ public class ShopManager : MonoBehaviour
         offer.description = perk.description;
         offer.itemType = ShopItemType.Perk;
 
-        float rarityMultiplier = Mathf.Pow(1.6f, 7 - perk.weight);
+        float rarityMultiplier = Mathf.Pow(rampUpValuePerks, 7 - perk.weight);
         offer.baseCost = Mathf.RoundToInt(600 * rarityMultiplier);
 
         offer.perk = perk;
@@ -149,7 +150,7 @@ public class ShopManager : MonoBehaviour
 
     private float GetRoundPriceMultiplier(int wave)
     {
-        float multiplier = Mathf.Pow(rampUpValue, wave - 1);
+        float multiplier = Mathf.Pow(rampUpValueAllShopItems, wave - 1);
 
         return Mathf.Min(multiplier, 100f);
     }
