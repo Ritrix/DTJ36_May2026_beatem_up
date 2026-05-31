@@ -235,6 +235,7 @@ GameObject:
   - component: {fileID: 440148537}
   - component: {fileID: 440148539}
   - component: {fileID: 440148538}
+  - component: {fileID: 440148540}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -299,6 +300,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 440148536}
   m_CullTransparentMesh: 1
+--- !u!114 &440148540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440148536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a4ed2bd56a31854db24b20127cd782b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EndScreenController
 --- !u!1 &475365424
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,7 +760,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1164199019}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 440148540}
+        m_TargetAssemblyTypeName: EndScreenController, Assembly-CSharp
+        m_MethodName: returnToMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1164199019
 MonoBehaviour:
   m_ObjectHideFlags: 0
