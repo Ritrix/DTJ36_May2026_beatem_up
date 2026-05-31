@@ -54,6 +54,7 @@ public class WaveSpawner : MonoBehaviour
         int wave = GameManager.Instance != null
             ? GameManager.Instance.CurrentWave
             : 1;
+        GameManager.Instance.BeginRoundEffects();
 
         enemiesToSpawn = GetEnemyCountForWave(wave);
         enemiesSpawned = 0;
@@ -114,6 +115,7 @@ public class WaveSpawner : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
+            GameManager.Instance.CompleteRoundEffects();
             GameManager.Instance.OpenShop();
         }
     }
@@ -232,7 +234,15 @@ public class WaveSpawner : MonoBehaviour
 
     private int GetEnemyCountForWave(int wave)
     {
-        return baseEnemyCount * (int)Mathf.Pow(2, wave - 1);
+        int count = baseEnemyCount * (int)Mathf.Pow(2, wave - 1);
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.ChallengeModeActiveThisRound)
+        {
+            count *= 3;
+        }
+
+        return count;
     }
 
     private float GetMinSpawnInterval(int wave)

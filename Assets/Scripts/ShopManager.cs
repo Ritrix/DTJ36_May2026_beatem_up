@@ -160,10 +160,26 @@ public class ShopManager : MonoBehaviour
                 GameManager.Instance.UnlockFourthPerkSlot();
                 break;
 
+            case ShopItemType.CoinMagnetism:
+                GameManager.Instance.UnlockCoinMagnetism();
+                break;
+
+            case ShopItemType.OneUseItem:
+                if (!GameManager.Instance.TrySetHeldItem(item.oneUseItemType))
+                {
+                    Debug.Log("Could not buy item because player is already holding one.");
+                }
+                break;
+
+            case ShopItemType.ChallengeMode:
+                GameManager.Instance.SetChallengeModeNextRound();
+                break;
+
             case ShopItemType.Perk:
                 perkPopupUI.OpenPopup(item.perk);
                 break;
         }
+
         GameManager.Instance.RegisterPurchase(item.itemName);
     }
 

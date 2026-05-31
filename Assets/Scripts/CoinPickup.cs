@@ -24,6 +24,12 @@ public class CoinPickup : MonoBehaviour
     [SerializeField] private Color goldColor = new Color(1f, 0.75f, 0.1f);
     [SerializeField] private Color redColor = new Color(1f, 0.1f, 0.1f);
 
+    [SerializeField] private float magnetDelay = 2f;
+    [SerializeField] private float magnetSpeed = 6f;
+
+    private float landedTimer;
+    private Transform playerTarget;
+
     private Vector3 startPosition;
     private Vector3 targetPosition;
 
@@ -106,6 +112,11 @@ public class CoinPickup : MonoBehaviour
         {
             Land();
         }
+
+        if (!isFlying && canPickup)
+        {
+            HandleMagnetism();
+        }
     }
 
     private void Land()
@@ -113,6 +124,11 @@ public class CoinPickup : MonoBehaviour
         isFlying = false;
         canPickup = true;
         transform.position = targetPosition;
+
+        landedTimer = 0f;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+            playerTarget = player.transform;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -126,5 +142,24 @@ public class CoinPickup : MonoBehaviour
 
         wallet.AddCoins(value);
         Destroy(gameObject);
+    }
+
+    private void HandleMagnetism()
+    {
+        if (GameManager.Instance == null) return;
+        if (!GameManager.Instance.HasCoinMagnetism &&
+            !GameManager.Instance.HasPerk(PerkType.Wildcard))
+            return;
+
+        landedTimer += Time.deltaTime;
+
+        if (landedTimer < magnetDelay) return;
+        if (playerTarget == null) return;
+
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            playerTarget.position,
+            magnetSpeed * Time.deltaTime
+        );
     }
 }

@@ -71,9 +71,21 @@ public class EnemyHealth : MonoBehaviour
         int hitDirection
     )
     {
-        int finalDamage = attack.damage + GameManager.Instance.BonusDamage;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        Health playerHealth = player != null ? player.GetComponent<Health>() : null;
+
+        int finalDamage = GameManager.Instance != null
+            ? GameManager.Instance.ModifyOutgoingDamage(attack.damage, playerHealth)
+            : attack.damage;
 
         health.TakeDamage(finalDamage);
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.HasPerk(PerkType.ExplosiveStrikes))
+        {
+            int explosionDamage = Mathf.CeilToInt(finalDamage * 0.3f);
+            ExplosionDamage.Explode(hitPosition, explosionDamage, 1.5f, LayerMask.GetMask("Enemy"));
+        }
 
         if (damageNumberSpawner != null)
         {
@@ -102,10 +114,19 @@ public class EnemyHealth : MonoBehaviour
 
         if (!handledSpecialHitReaction)
         {
-            ApplyStun(attack.stunDuration);
+            float finalStun = GameManager.Instance != null
+                ? GameManager.Instance.ModifyStun(attack.stunDuration)
+                : attack.stunDuration;
+
+            ApplyStun(finalStun);
         }
 
         lastHitDirection = hitDirection;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.AddMomentumDamage();
+        }
 
         Debug.Log(
             $"Enemy hit\n" +

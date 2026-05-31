@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        rb.linearVelocity = moveInput * moveSpeed;
+        rb.linearVelocity = moveInput * GetMoveSpeed();
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -69,5 +69,12 @@ public class PlayerMovement : MonoBehaviour
     public int FacingDirection()
     {
         return FacingRight ? 1 : -1;
+    }
+
+    private float GetMoveSpeed()
+    {
+        return GameManager.Instance != null
+            ? GameManager.Instance.ModifyMoveSpeed(moveSpeed)
+            : moveSpeed;
     }
 }

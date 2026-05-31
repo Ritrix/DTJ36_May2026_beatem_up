@@ -8,8 +8,25 @@ public enum ShopItemType
     Speed,
     EnemiesHalfHealthNextRound,
     FourthPerkSlot,
+
+    OneUseItem,
+
+    CoinMagnetism,
+    ChallengeMode,
+
     Perk
 }
+
+public enum OneUseItemType
+{
+    None,
+    Nuke,
+    HealthPotion,
+    InvincibilityInjection,
+    AdrenalineInjection,
+    BrokenTeleport
+}
+
 
 [CreateAssetMenu(menuName = "Shop/Shop Item")]
 public class ShopItem : ScriptableObject
@@ -27,4 +44,7 @@ public class ShopItem : ScriptableObject
 
     [Header("Perk Only")]
     public PerkData perk;
+
+    [Header("One Use Item Only")]
+    public OneUseItemType oneUseItemType;
 }
