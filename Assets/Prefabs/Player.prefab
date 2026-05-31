@@ -17,6 +17,11 @@ GameObject:
   - component: {fileID: 272118083330568659}
   - component: {fileID: 6820627163648552035}
   - component: {fileID: 2279807456985571553}
+  - component: {fileID: 1623994745299311198}
+  - component: {fileID: 7011443732021794272}
+  - component: {fileID: 94625233018997762}
+  - component: {fileID: 5879936751834816623}
+  - component: {fileID: 1358343345451401878}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -34,7 +39,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.06, y: 0.03, z: 0}
-  m_LocalScale: {x: 1.1528, y: 2.3313, z: 1}
+  m_LocalScale: {x: 0.74, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -88,7 +93,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -2754303299978474535, guid: a063fe383c30f4e4d865d43a56070233, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -159,17 +164,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.000000029802322, y: -0.030833751}
+  m_Offset: {x: 0.23362257, y: 0.04934275}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 2.31, y: 3.94}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.7194033, y: 0.93833274}
+  m_Size: {x: 1.3897978, y: 3.544071}
   m_EdgeRadius: 0
 --- !u!114 &3771510219983405223
 MonoBehaviour:
@@ -183,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b161e9f2cc795f4f8b96a5b83cdead8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 5
+  moveSpeed: 8
   combat: {fileID: 272118083330568659}
 --- !u!114 &8364126134767049495
 MonoBehaviour:
@@ -258,6 +263,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 7e03fc25-8c86-4c02-949b-cd9686ecdbd0
     m_ActionName: 'Player/Heavy attack[/DualSenseGamepadHID/buttonEast,/Keyboard/k]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1358343345451401878}
+        m_TargetAssemblyTypeName: PlayerOneUseItem, Assembly-CSharp
+        m_MethodName: OnUseItem
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e9b9f549-2cf5-4514-ae20-71848e4ca60f
+    m_ActionName: 'Player/OneUseItem[/Keyboard/l,/DualSenseGamepadHID/buttonNorth]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -316,3 +337,80 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aab16f1f0ed0714c88ece03b667f229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  playerMaxHealthBase: 100
+--- !u!95 &1623994745299311198
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979821183098404218}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f57615c9d1619ad41b0959e1c4c4eda8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7011443732021794272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979821183098404218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8396b2edcbec1d4293b725a1f58697e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerWallet
+--- !u!114 &94625233018997762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979821183098404218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6db575253f2d35d429ddede8b96dc713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPerkRuntime
+  health: {fileID: 6820627163648552035}
+--- !u!114 &5879936751834816623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979821183098404218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ebfd3f155fbb6f4c9d4034f2d5fa047, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInvincibility
+--- !u!114 &1358343345451401878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979821183098404218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 988733444dd8fca4cb196cfbcd3d82bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerOneUseItem
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playAreaMin: {x: -8, y: -4}
+  playAreaMax: {x: 8, y: 4}

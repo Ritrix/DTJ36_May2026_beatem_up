@@ -306,8 +306,9 @@ MonoBehaviour:
   followOffset: {x: 0, y: 0}
   deadzoneX: 0.25
   deadzoneY: 0.45
-  targetZoom: 5
+  targetZoom: 7
   zoomSmooth: 8
+  targetZoomReset: 7
   maxShake: 0.7
   shakeDecay: 2
 --- !u!1 &1045439898
@@ -346,6 +347,98 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1572644352069418358, guid: 71bface715db30a41acf039239acb578, type: 3}
   m_PrefabInstance: {fileID: 1471290317}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1353811423
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1353811424}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1353811424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353811423}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 18.96, y: -12.42, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1407862021
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1407862023}
+  - component: {fileID: 1407862024}
+  - component: {fileID: 1407862025}
+  m_Layer: 0
+  m_Name: TempGameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1407862023
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407862021}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.79911, y: -1.03766, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1407862024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407862021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eebf6146679ae194bb5ce3104b894021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugRunInfo
+--- !u!114 &1407862025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407862021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b31d67eacbde57442b46b37eec82f582, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  combatSceneName: SurvivalMode
+  shopSceneName: ShopScene
+  mainMenuSceneName: MainMenuScene
+  perkSlotCount: 3
 --- !u!1 &1435588434
 GameObject:
   m_ObjectHideFlags: 0
@@ -466,15 +559,56 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 6979821183098404218, guid: 71bface715db30a41acf039239acb578, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71bface715db30a41acf039239acb578, type: 3}
+--- !u!1 &1623302960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1623302962}
+  - component: {fileID: 1623302961}
+  m_Layer: 0
+  m_Name: DamageNumberSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1623302961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623302960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26a502808245fb49a109bc156d855e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageNumberSpawner
+  floatingTextPrefab: {fileID: 2387669454153488067, guid: 738ede35adbe0af49ab0fa329b2e7964, type: 3}
+--- !u!4 &1623302962
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623302960}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 37.88058, y: -10.70889, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1825885730
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,20 +640,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
   player: {fileID: 1194398698}
   enemyPrefabs:
-  - {fileID: 2978305558287190506, guid: 17c479acab4d6c3428ef697867c1f7f9, type: 3}
+  - {fileID: 8048615352662986824, guid: 17c479acab4d6c3428ef697867c1f7f9, type: 3}
+  - {fileID: 5692046016314906837, guid: d3cc0094e48675e4c9a9fcefbd56c357, type: 3}
   spawnPoints:
   - {fileID: 509018889}
   - {fileID: 1045439899}
   baseEnemyCount: 3
+  enemiesAddedPerWave: 2
+  startingMaxAliveEnemies: 2
+  maxAliveEnemiesAddedPerWave: 1
+  maxAliveEnemiesCap: 12
   startingMinSpawnInterval: 1.5
   startingMaxSpawnInterval: 3
   minSpawnIntervalCap: 0.25
   maxSpawnIntervalCap: 0.8
-  spawnRateIncreasePerWave: 0.12
   spawnIntervalMultiplierPerWave: 0.85
-  maxAliveEnemies: 20
+  jumperFirstWave: 4
+  jumperMaxStartingCount: 1
+  jumperMaxAddedPerWave: 1
+  jumperSpawnCenter: {x: 0, y: -5}
+  jumperSpawnSize: {x: 20, y: 5}
   startDelay: 2
-  endWaveDelay: 2
+  endWaveDelay: 5
+  survivalMode: 1
+  healthIncreaseEveryXRounds: 3
+  healthIncreaseAmount: 10
 --- !u!4 &1825885732
 Transform:
   m_ObjectHideFlags: 0
@@ -637,3 +782,6 @@ SceneRoots:
   - {fileID: 1825885732}
   - {fileID: 509018889}
   - {fileID: 1045439899}
+  - {fileID: 1407862023}
+  - {fileID: 1623302962}
+  - {fileID: 1353811424}

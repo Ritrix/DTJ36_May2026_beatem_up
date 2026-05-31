@@ -18,13 +18,50 @@ public class Health : MonoBehaviour
         OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
     }
 
+    public void SetCurrentHealth(int newHealth)
+    {
+        CurrentHealth = Mathf.Clamp(newHealth, 0, maxHealth);
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+
+        if (CurrentHealth <= 0)
+        {
+            OnDied?.Invoke();
+        }
+    }
+
+    public void SetMaxHealth(int newMaxHealth, bool fillHealth = true)
+    {
+        maxHealth = newMaxHealth;
+
+        if (fillHealth)
+            CurrentHealth = maxHealth;
+        else
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+    }
+
     public void TakeDamage(int amount)
     {
         Debug.Log($"{name} TakeDamage called for {amount}");
 
         if (IsDead) return;
 
-        CurrentHealth -= amount;
+        int finalAmount = amount;
+
+        PlayerInvincibility inv = GetComponent<PlayerInvincibility>();
+        if (inv != null && inv.IsInvincible)
+        {
+            Debug.Log("Damage blocked by invincibility.");
+            return;
+        }
+
+        if (CompareTag("Player") && GameManager.Instance != null)
+        {
+            finalAmount = GameManager.Instance.ModifyIncomingDamage(amount);
+        }
+        Debug.Log($"{name} took {finalAmount} damage.");
+        CurrentHealth -= finalAmount;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
 
         Debug.Log($"{name} health is now {CurrentHealth}/{maxHealth}");
@@ -35,6 +72,13 @@ public class Health : MonoBehaviour
         {
             OnDied?.Invoke();
         }
+    }
+
+    public void ReviveToPercent(float percent)
+    {
+        CurrentHealth = Mathf.CeilToInt(maxHealth * percent);
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 1, maxHealth);
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
     }
 
     public void Heal(int amount)

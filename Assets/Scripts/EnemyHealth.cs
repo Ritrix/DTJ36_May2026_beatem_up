@@ -17,6 +17,8 @@ public class EnemyHealth : MonoBehaviour
 
     public bool IsStunned { get; private set; }
 
+    private DamageNumberSpawner damageNumberSpawner;
+
     private void Update()
     {
         if (!IsStunned)
@@ -36,6 +38,8 @@ public class EnemyHealth : MonoBehaviour
     {
         health = GetComponent<Health>();
         coinSpawner = GetComponent<CoinSpawner>();
+        damageNumberSpawner = FindAnyObjectByType<DamageNumberSpawner>();
+        
     }
 
     private void OnEnable()
@@ -67,17 +71,63 @@ public class EnemyHealth : MonoBehaviour
         int hitDirection
     )
     {
-        health.TakeDamage(attack.damage);
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        Health playerHealth = player != null ? player.GetComponent<Health>() : null;
+
+        int finalDamage = GameManager.Instance != null
+            ? GameManager.Instance.ModifyOutgoingDamage(attack.damage, playerHealth)
+            : attack.damage;
+
+        health.TakeDamage(finalDamage);
+
+        if (GameManager.Instance != null &&
+            GameManager.Instance.HasPerk(PerkType.ExplosiveStrikes))
+        {
+            int explosionDamage = Mathf.CeilToInt(finalDamage * 0.3f);
+            ExplosionDamage.Explode(hitPosition, explosionDamage, 1.5f, LayerMask.GetMask("Enemy"));
+        }
+
+        if (damageNumberSpawner != null)
+        {
+            damageNumberSpawner.SpawnDamageNumber(finalDamage, hitPosition);
+        }
 
         if (dropCoinsOnHit && coinSpawner != null)
         {
             coinSpawner.SpawnCoins(hitDirection);
         }
-        
-        ApplyStun(attack.stunDuration);
+
+        bool handledSpecialHitReaction = false;
+
+        JumperBehaviour jumper = GetComponentInParent<JumperBehaviour>();
+
+        if (jumper != null)
+        {
+            Debug.Log($"Jumper found. CanBeKnockedDown: {jumper.CanBeKnockedDown}");
+
+            if (jumper.CanBeKnockedDown)
+            {
+                jumper.LaunchAwayFromPlayer();
+                handledSpecialHitReaction = true;
+            }
+        }
+
+        if (!handledSpecialHitReaction)
+        {
+            float finalStun = GameManager.Instance != null
+                ? GameManager.Instance.ModifyStun(attack.stunDuration)
+                : attack.stunDuration;
+
+            ApplyStun(finalStun);
+        }
 
         lastHitDirection = hitDirection;
-        
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.AddMomentumDamage();
+        }
+
         Debug.Log(
             $"Enemy hit\n" +
             $"Enemy: {name}\n" +

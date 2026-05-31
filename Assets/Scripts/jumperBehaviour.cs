@@ -1,296 +1,371 @@
-﻿using Unity.VisualScripting;
+﻿using System.Collections;
 using UnityEngine;
-using System.Collections;
 
-
-public class jumperBehaviour : MonoBehaviour
+[RequireComponent(typeof(Collider2D))]
+public class JumperBehaviour : MonoBehaviour
 {
-    [Header("Follow Player + Movement")]
-    public GameObject playerPosition;
-    public GameObject enemyObject;
-    [SerializeField] private bool facingRight = true;
-    private bool isBouncing;
-    private float bounceTimer;
-    private Vector2 bounceDirection;
-    [SerializeField] private float bounceDistance = 0.5f;
-    [SerializeField] private float bounceDuration = 1f;
-    private bool canMove;
+    private enum JumperState
+    {
+        Hidden,
+        FadingIn,
+        Dropping,
+        Windup,
+        Dashing,
+        Recovering,
+        Stunned
+    }
+
+    [Header("References")]
+    [SerializeField] private Transform player;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     [Header("Detection")]
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private Vector2 detectionSize = new Vector2(3f, 2f);
-    [SerializeField] private Vector3 detectionRange = new Vector3(2f, 0f);
-    [SerializeField] private Vector2 detectionOffset = new Vector2(3f, -1f);
-    [SerializeField] private Vector2 landedDetectionSize = new Vector2(3f, 2f);
-    //[SerializeField] private Vector3 landedDetectionRange = new Vector3(2f, 0f);
-    //[SerializeField] private Vector2 landedDetectionOffset = new Vector2(3f, -1f);
-    //[SerializeField] private float detectWidth = 2f;
-    //[SerializeField] private float detectHeight = 1f;
+    [SerializeField] private Vector2 detectionSize = new Vector2(2f, 8f);
+    [SerializeField] private Vector2 detectionOffset = new Vector2(0f, -4f);
+
+    [Header("Drop Attack")]
+    [SerializeField] private float fadeDuration = 0.35f;
     [SerializeField] private float dropSpeed = 10f;
-    private bool hasLanded;
-    private float dropTargetY; // locked Y to move toward
-    private bool playerWasInSight = false;
+    [SerializeField] private float landingYOffset = 0.2f;
 
-    [Header("Attack")]
-    [SerializeField] private float attackCooldown = 2f;
-    private float cooldownTimer;
-    private bool isDropping;
-    private Rigidbody2D rb;
-    private bool isAttacking;
-    private bool recharging;
-    private bool attackActive;
+    [Header("Dash Attack")]
+    [SerializeField] private float windupTime = 0.75f;
+    [SerializeField] private float dashSpeed = 10f;
+    [SerializeField] private float dashPastPlayerDistance = 3f;
+    [SerializeField] private float recoverTime = 0.8f;
+
+    [Header("Damage")]
+    [SerializeField] private int contactDamage = 10;
+    [SerializeField] private float hitCooldownPerDash = 0.25f;
+
+    [Header("Launched When Hit")]
+    [SerializeField] private float launchedDistance = 3f;
+    [SerializeField] private float launchedDuration = 0.25f;
+    [SerializeField] private float getUpDelay = 0.75f;
+
+    [Header("Telegraph Hops")]
+    [SerializeField] private int windupHopCount = 3;
+    [SerializeField] private float windupHopDistance = 0.45f;
+    [SerializeField] private float windupHopHeight = 0.35f;
+    [SerializeField] private float windupHopDuration = 0.25f;
+
+    [Header("Dive Arc")]
+    [SerializeField] private float diveDuration = 0.55f;
+    [SerializeField] private float diveHeight = 1.2f;
+
+    [Header("Survival Auto Drop")]
+    [SerializeField] private bool autoDropInSurvival = true;
+    [SerializeField] private float autoDropDelay = 20f;
+
+    private float hiddenTimer;
+
+    private JumperState state = JumperState.Hidden;
+
     private bool hasHitPlayerThisAttack;
+    private float hitTimer;
+    private Vector2 dashTarget;
 
-
-    private SpriteRenderer spriteRenderer;
+    public bool CanBeKnockedDown =>
+        state == JumperState.Dropping ||
+        state == JumperState.Windup ||
+        state == JumperState.Dashing;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        hasLanded = false;
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        SetAlpha(0f);
     }
 
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Update()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (player == null) return;
 
-        // Start invisible
-        Color color = spriteRenderer.color;
-        color.a = 0f;
-        spriteRenderer.color = color;
+        hitTimer -= Time.deltaTime;
 
-        StartCoroutine(FadeInAfterDelay());
-
-    }
-
-    private IEnumerator FadeInAfterDelay()
-    {
-        yield return new WaitForSeconds(5f);
-
-        float fadeDuration = 1f;
-        float elapsed = 0f;
-
-        while (elapsed < fadeDuration)
+        switch (state)
         {
-            elapsed += Time.deltaTime;
+            case JumperState.Hidden:
+                HandleHiddenState();
+                break;
 
-            Color color = spriteRenderer.color;
-            color.a = Mathf.Lerp(0f, 1f, elapsed / fadeDuration);
-            spriteRenderer.color = color;
+            case JumperState.Dropping:
+                HandleDrop();
+                break;
 
-            yield return null;
+            case JumperState.Windup:
+                FacePlayer();
+                break;
 
-            canMove = true;
         }
-
-        // Ensure fully visible
-        Color finalColor = spriteRenderer.color;
-        finalColor.a = 1f;
-        spriteRenderer.color = finalColor;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void HandleHiddenState()
     {
-        if (!canMove)
+        hiddenTimer += Time.deltaTime;
+
+        if (PlayerBelow())
+        {
+            hiddenTimer = 0f;
+            StartCoroutine(FadeInThenDrop());
             return;
-
-        //facePlayer();
-
-        cooldownTimer += Time.deltaTime;
-
-        //Debug.Log($"is dropping: {isDropping}");
-
-        if (!isDropping && PlayerBelow())
-        {
-            isDropping = true;
-            dropTargetY = playerPosition.transform.position.y - 1f;
-            // optional: stop horizontal movement here
-            Debug.Log("Player detected below → dropping!");
         }
 
-        if (isBouncing)
+        if (autoDropInSurvival && hiddenTimer >= autoDropDelay)
         {
-            enemyObject.transform.position +=
-                (Vector3)(bounceDirection * (bounceDistance / bounceDuration) * Time.deltaTime);
-
-            bounceTimer -= Time.deltaTime;
-
-            if (bounceTimer <= 0f)
-            {
-                isBouncing = false;
-            }
+            hiddenTimer = 0f;
+            ForceDropNearPlayer();
         }
-
-        if (isDropping && !hasLanded)
-        {
-            Drop();
-
-        }
-        facePlayer();
-
-        if (hasLanded && PlayerInSight() && !isAttacking && !recharging)
-        {
-            StartCoroutine(AttackRoutine());
-        }
-      //Debug.Log($"Has landed: {hasLanded}, player in sight: {PlayerInSight()}, Is attacking: {isAttacking}, recharging: {recharging}");
     }
 
-
-
-
-    // JUMP ATTACK SEQUENCE //
-    private IEnumerator AttackRoutine()
+    private void ForceDropNearPlayer()
     {
-        recharging = true;
+        if (player == null) return;
 
-        // Windup
-        yield return StartCoroutine(WindupHops());
+        Vector3 dropPosition = transform.position;
 
-        Vector2 attackTarget = playerPosition.transform.position;
+        dropPosition.x = player.position.x + Random.Range(-1.5f, 1.5f);
+        dropPosition.y = player.position.y + 5f;
+        dropPosition.z = transform.position.z;
+
+        transform.position = dropPosition;
+
+        Debug.Log($"{name} auto-dropping after hidden timeout.");
+
+        StartCoroutine(FadeInThenDrop());
+    }
+
+    public void SetPlayer(Transform newPlayer)
+    {
+        player = newPlayer;
+    }
+
+    private IEnumerator FadeInThenDrop()
+    {
+        state = JumperState.FadingIn;
+
+        float timer = 0f;
+
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            SetAlpha(timer / fadeDuration);
+            yield return null;
+        }
+
+        SetAlpha(1f);
 
         hasHitPlayerThisAttack = false;
-        isAttacking = true;
-
-        // Actual attack
-        yield return StartCoroutine(
-            ArcJump(
-                transform.position,
-                attackTarget,
-                3f,
-                0.8f
-            )
-        );
-
-        isAttacking = false;
-
-        yield return new WaitForSeconds(attackCooldown);
-
-        recharging = false;
+        state = JumperState.Dropping;
     }
 
-    //private void OnTriggerStay2D(Collider2D other)
-    //{
-    //    Debug.Log($"Touching: {other.name}");
-    //}
-
-    private void OnTriggerStay2D(Collider2D other)
+    private void HandleDrop()
     {
-        if (!isAttacking || hasHitPlayerThisAttack)
-            return;
+        float targetY = player.position.y + landingYOffset;
 
-        if (other.CompareTag("Player"))
+        Vector3 pos = transform.position;
+        pos.y = Mathf.MoveTowards(pos.y, targetY, dropSpeed * Time.deltaTime);
+        transform.position = pos;
+
+        TryHitPlayer();
+
+        if (Mathf.Abs(transform.position.y - targetY) <= 0.05f)
         {
-            hasHitPlayerThisAttack = true;
-            Debug.Log("Jump Attack Hit");
+            StartCoroutine(WindupThenDash());
         }
     }
 
-    //actual attack
-    //private void OnTriggerEnter2D(Collider2D other)
-    //{
-    //    if (!isAttacking)
-    //    {
-    //        return;
-    //    }
-
-    //    if (other.CompareTag("Player"))
-    //    {
-    //        Debug.Log("Jump Attack Hit");
-    //    }
-    //}
-
-    private IEnumerator WindupHops()
+    private IEnumerator WindupThenDash()
     {
-        float hopDistance = 0.5f;
-        float hopHeight = 0.4f;
-        float hopDuration = 0.5f;
+        state = JumperState.Windup;
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < windupHopCount; i++)
         {
-            float direction = (i % 2 == 0) ? -1f : 1f;
+            FacePlayer();
+
+            float direction = i % 2 == 0 ? -1f : 1f;
 
             Vector2 start = transform.position;
-            Vector2 end = start + Vector2.right * direction * hopDistance;
+            Vector2 end = start + new Vector2(direction * windupHopDistance, 0f);
 
-            yield return StartCoroutine(
-                ArcJump(start, end, hopHeight, hopDuration)
-            );
+            yield return StartCoroutine(ArcMove(
+                start,
+                end,
+                windupHopHeight,
+                windupHopDuration,
+                false
+            ));
         }
+
+        hasHitPlayerThisAttack = false;
+
+        float attackDirection = player.position.x > transform.position.x ? 1f : -1f;
+
+        Vector2 dashStart = transform.position;
+
+        dashTarget = new Vector2(
+            player.position.x + attackDirection * dashPastPlayerDistance,
+            player.position.y
+        );
+
+        yield return StartCoroutine(ArcMove(
+            dashStart,
+            dashTarget,
+            diveHeight,
+            diveDuration,
+            true
+        ));
+
+        StartCoroutine(RecoverThenWindup());
     }
 
-    private IEnumerator ArcJump(
-    Vector2 startPos,
-    Vector2 endPos,
-    float jumpHeight,
-    float duration)
+    private IEnumerator ArcMove(
+        Vector2 start,
+        Vector2 end,
+        float height,
+        float duration,
+        bool canDamage
+    )
     {
-        isAttacking = true;
-        float elapsed = 0f;
+        state = canDamage ? JumperState.Dashing : JumperState.Windup;
 
-        while (elapsed < duration)
+        float timer = 0f;
+
+        while (timer < duration)
         {
-            elapsed += Time.deltaTime;
+            timer += Time.deltaTime;
 
-            float t = elapsed / duration;
+            float t = Mathf.Clamp01(timer / duration);
 
-            // Move from start to end
-            Vector2 pos = Vector2.Lerp(startPos, endPos, t);
+            Vector2 position = Vector2.Lerp(start, end, t);
 
-            // Add arc
-            float arc = jumpHeight * 4f * t * (1f - t);
+            float arc = Mathf.Sin(t * Mathf.PI) * height;
+            position.y += arc;
 
-            pos.y += arc;
+            transform.position = position;
 
-            transform.position = pos;
+            if (canDamage)
+            {
+                TryHitPlayer();
+            }
 
             yield return null;
         }
 
-        isAttacking = false;
-
-        transform.position = endPos;
+        transform.position = end;
     }
 
-    private void Drop()
+    private void HandleDash()
     {
+        transform.position = Vector2.MoveTowards(
+            transform.position,
+            dashTarget,
+            dashSpeed * Time.deltaTime
+        );
 
+        TryHitPlayer();
 
-        Vector3 pos = enemyObject.transform.position;
-
-
-        pos.y = Mathf.MoveTowards(
-                pos.y,
-                dropTargetY,
-                5f * Time.deltaTime
-                );
-
-        if (pos.y <= dropTargetY)
+        if (Vector2.Distance(transform.position, dashTarget) <= 0.05f)
         {
-            hasLanded = true;
+            StartCoroutine(RecoverThenWindup());
+        }
+    }
 
+    private IEnumerator RecoverThenWindup()
+    {
+        state = JumperState.Recovering;
+
+        yield return new WaitForSeconds(recoverTime);
+
+        StartCoroutine(WindupThenDash());
+    }
+
+    private void TryHitPlayer()
+    {
+        if (hasHitPlayerThisAttack) return;
+        if (hitTimer > 0f) return;
+
+        Collider2D hit = Physics2D.OverlapCircle(
+            transform.position,
+            0.5f,
+            playerLayer
+        );
+
+        if (hit == null) return;
+
+        Health health = hit.GetComponentInParent<Health>();
+
+        if (health == null) return;
+
+        health.TakeDamage(contactDamage);
+
+        hasHitPlayerThisAttack = true;
+        hitTimer = hitCooldownPerDash;
+
+        Debug.Log($"{name} body-slammed player for {contactDamage} damage.");
+    }
+
+    public void LaunchAwayFromPlayer()
+    {
+        Debug.Log($"{name} LaunchAwayFromPlayer called. State: {state}");
+
+        if (state == JumperState.Stunned) return;
+
+        StopAllCoroutines();
+        StartCoroutine(LaunchRoutine());
+    }
+
+    private IEnumerator LaunchRoutine()
+    {
+        state = JumperState.Stunned;
+
+        hasHitPlayerThisAttack = true;
+
+        Vector2 start = transform.position;
+
+        float direction = transform.position.x < player.position.x ? -1f : 1f;
+
+        Vector2 end = start + new Vector2(direction * launchedDistance, 0f);
+
+        float knockbackHeight = 0.8f;
+
+        float timer = 0f;
+
+        while (timer < launchedDuration)
+        {
+            timer += Time.deltaTime;
+
+            float t = Mathf.Clamp01(timer / launchedDuration);
+
+            Vector2 position = Vector2.Lerp(start, end, t);
+
+            float arc = Mathf.Sin(t * Mathf.PI) * knockbackHeight;
+            position.y += arc;
+
+            transform.position = position;
+
+            yield return null;
         }
 
-        enemyObject.transform.position = pos;
+        transform.position = end;
 
-        // Randomly bounce left or right
-        float dir = Random.value < 0.5f ? -1f : 1f;
+        Debug.Log($"{name} knocked down.");
 
-        bounceDirection = Vector2.right * dir;
-        isBouncing = true;
-        bounceTimer = bounceDuration;
+        yield return new WaitForSeconds(getUpDelay);
 
+        hasHitPlayerThisAttack = false;
+
+        StartCoroutine(WindupThenDash());
     }
 
     private bool PlayerBelow()
     {
-        Vector2 detectPosition = (Vector2)transform.position + detectionOffset;
+        Vector2 center = (Vector2)transform.position + detectionOffset;
 
         Collider2D hit = Physics2D.OverlapBox(
-            detectPosition,
+            center,
             detectionSize,
             0f,
             playerLayer
@@ -299,95 +374,31 @@ public class jumperBehaviour : MonoBehaviour
         return hit != null;
     }
 
-    private void facePlayer() //faces sprite towards player on x axis
+    private void FacePlayer()
     {
-        // face towards player
-        if (playerPosition.transform.position.x<enemyObject.transform.position.x)
-        {
-            // Player is to the left
-            facingRight = false;
-            enemyObject.transform.localScale = new Vector3(-2f, 2f, 2f); // flip x scale
-}
-        else
-        {
-            // Player is to the right
-            facingRight = true;
-            enemyObject.transform.localScale = new Vector3(2f, 2f, 2f); // normal scale
-        }
+        bool facingRight = player.position.x > transform.position.x;
+
+        float xScale = facingRight ? 2f : -2f;
+        transform.localScale = new Vector3(xScale, 2f, 2f);
     }
 
-    private void jumpAttack()
+    private void SetAlpha(float alpha)
     {
+        if (spriteRenderer == null) return;
 
+        Color color = spriteRenderer.color;
+        color.a = alpha;
+        spriteRenderer.color = color;
     }
 
-    // ---------------- LANDED PLAYER DETECTION ----------------
-
-    private bool PlayerInSight()
+    private void OnDrawGizmosSelected()
     {
+        Gizmos.color = Color.red;
 
-        RaycastHit2D hit = Physics2D.BoxCast(
-            transform.position,
-            landedDetectionSize,
-            0f,
-            Vector2.zero,
-            0f,
-            playerLayer
-        );
+        Vector2 center = (Vector2)transform.position + detectionOffset;
+        Gizmos.DrawWireCube(center, detectionSize);
 
-
-        bool playerInSight = hit.collider != null;
-
-        // Player just entered the detection box
-        if (playerInSight && !playerWasInSight)
-        {
-            Debug.Log("Player detected, jumping!");
-        }
-
-        playerWasInSight = playerInSight;
-
-        return hit.collider != null;
-
-    }
-
-
-    // ---------------- GIZMOS ----------------
-
-    private void OnDrawGizmos()
-    {
-
-
-
-        if (hasLanded)
-        {
-            Gizmos.color = Color.red;
-
-            Vector2 detectPosition = (Vector2)transform.position;
-
-            Vector2 direction = facingRight ? Vector2.right : Vector2.left;
-
-            detectPosition += new Vector2(
-                direction.x * detectionOffset.x,
-                detectionOffset.y
-            );
-
-            Gizmos.DrawWireCube(detectPosition, detectionRange);
-
-            // Large rectangle centered on enemy
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(transform.position, landedDetectionSize);
-        }
-        else
-        {
-            Gizmos.color = Color.red;
-
-            // Calculate final detection box position
-            Vector2 detectPosition = (Vector2)transform.position + detectionOffset;
-
-            // Draw rectangle for visualization
-            Gizmos.DrawWireCube(detectPosition, detectionSize);
-
-        }
-        
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, 0.5f);
     }
 }

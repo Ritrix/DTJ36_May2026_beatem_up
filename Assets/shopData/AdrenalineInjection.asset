@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e23578b5b21cfc946910a916c18e071c, type: 3}
+  m_Name: AdrenalineInjection
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItem
+  itemName: Adrenaline Injection
+  description: 'Use once any time: instantly fills super meter'
+  itemType: 6
+  baseCost: 80
+  value: 0
+  weight: 4
+  perk: {fileID: 0}
+  oneUseItemType: 4

@@ -12,6 +12,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private AttackData[] attacks;
     [SerializeField] private float comboResetTime = 0.8f;
     [SerializeField] private AttackData debugAttackData;
+    
 
     [Header("Input Buffer")]
     [SerializeField] private float directionBufferTime = 0.15f;
@@ -45,9 +46,13 @@ public class PlayerCombat : MonoBehaviour
     private AttackId currentAttack;
     private readonly HashSet<string> usedAttacksThisCombo = new();
 
+    [Header("Animation")]
+    private Animator animator;
+
     private void Awake()
     {
         movement = GetComponent<PlayerMovement>();
+        animator = GetComponent<Animator>();
     }
 
 
@@ -129,9 +134,14 @@ public class PlayerCombat : MonoBehaviour
 
         if (nextAttack == null) return;
 
-        string attackKey = nextAttack.name;
+        string attackKey = $"{nextAttack.strength}_{nextAttack.direction}";
 
-        if (usedAttacksThisCombo.Contains(attackKey))
+        bool repeatedMove = usedAttacksThisCombo.Contains(attackKey);
+
+        bool canRepeat = GameManager.Instance != null &&
+                         GameManager.Instance.HasPerk(PerkType.Freestyle);
+
+        if (repeatedMove && !canRepeat)
         {
             Debug.Log($"Cannot repeat attack in combo: {attackKey}");
             return;
@@ -142,13 +152,11 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        StartAttack(nextAttack);
+        StartAttack(nextAttack, repeatedMove);
     }
 
-    private void StartAttack(AttackData attack)
+    private void StartAttack(AttackData attack, bool repeatedMove)
     {
-        bool wasInterrupted = isAttacking;
-
         movement.SetMovementLocked(true);
 
         currentAttackData = attack;
@@ -159,10 +167,69 @@ public class PlayerCombat : MonoBehaviour
         canCancel = false;
 
         attackTimer = 0f;
-        comboTimer = comboResetTime;
+
+        comboTimer = GameManager.Instance != null
+            ? GameManager.Instance.ModifyComboTimer(comboResetTime)
+            : comboResetTime;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetCurrentHitRepeated(repeatedMove);
+        }
 
         string attackKey = $"{attack.strength}_{attack.direction}";
         usedAttacksThisCombo.Add(attackKey);
+
+        PlayAnimationState(attack.windUpAnimationState);
+    }
+
+    //private void StartAttack(AttackData attack)
+    //{
+    //    //bool wasInterrupted = isAttacking;
+
+    //    movement.SetMovementLocked(true);
+
+    //    currentAttackData = attack;
+
+    //    isAttacking = true;
+    //    hitboxActive = false;
+    //    hitboxHasActivated = false;
+    //    canCancel = false;
+
+    //    attackTimer = 0f;
+    //    comboTimer = GameManager.Instance != null
+    //        ? GameManager.Instance.ModifyComboTimer(comboResetTime)
+    //        : comboResetTime;
+
+    //    string attackKey = $"{attack.strength}_{attack.direction}";
+
+    //    bool repeatedMove = usedAttacksThisCombo.Contains(attackKey);
+
+    //    bool canRepeat = GameManager.Instance != null &&
+    //                     GameManager.Instance.HasPerk(PerkType.Freestyle);
+
+    //    if (repeatedMove && !canRepeat)
+    //    {
+    //        Debug.Log($"Cannot repeat attack in combo: {attackKey}");
+    //        return;
+    //    }
+
+    //    if (GameManager.Instance != null)
+    //    {
+    //        GameManager.Instance.SetCurrentHitRepeated(repeatedMove);
+    //    }
+
+    //    usedAttacksThisCombo.Add(attackKey);
+
+    //    PlayAnimationState(attack.windUpAnimationState);
+    //}
+
+    private void PlayAnimationState(string stateName)
+    {
+        if (animator == null) return;
+        if (string.IsNullOrEmpty(stateName)) return;
+
+        animator.Play(stateName, 0, 0f);
     }
 
     private void HandleAttackTimer()
@@ -193,6 +260,8 @@ public class PlayerCombat : MonoBehaviour
         hitboxActive = true;
         canCancel = true;
 
+        PlayAnimationState(currentAttackData.hitAnimationState);
+
         lastHitboxCenter = GetHitboxCenter(currentAttackData);
         lastHitboxSize = currentAttackData.hitboxSize;
         hitboxDrawTimer = currentAttackData.hitboxEndTime - currentAttackData.hitboxStartTime;
@@ -219,6 +288,7 @@ public class PlayerCombat : MonoBehaviour
         {
             movement.SetMovementLocked(false);
         }
+        PlayAnimationState("playerIdle");
         isAttacking = false;
         hitboxActive = false;
         canCancel = false;
@@ -239,6 +309,12 @@ public class PlayerCombat : MonoBehaviour
     private void ResetCombo()
     {
         Debug.Log($"Combo reset. Combo Hit Count: {comboHitCount}");
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetMomentumDamage();
+            GameManager.Instance.SetCurrentHitRepeated(false);
+        }
 
         usedAttacksThisCombo.Clear();
         comboTimer = 0f;

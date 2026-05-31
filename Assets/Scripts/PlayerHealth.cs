@@ -5,6 +5,8 @@ public class PlayerHealth : MonoBehaviour
 {
     private Health health;
 
+    [SerializeField] private int playerMaxHealthBase = 100;
+
     private void Awake()
     {
         health = GetComponent<Health>();
@@ -24,6 +26,11 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
+        int finalMaxHealth = GameManager.Instance != null
+            ? GameManager.Instance.GetMaxHealthModifier(playerMaxHealthBase)
+            : playerMaxHealthBase;
+
+        health.SetMaxHealth(finalMaxHealth, true);
         UpdateHealthUI(health.CurrentHealth, health.MaxHealth);
     }
 
@@ -39,6 +46,17 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
+        if (GameManager.Instance != null &&
+            GameManager.Instance.TryUseSecondWind())
+        {
+            health.ReviveToPercent(0.5f);
+            Debug.Log("Second Wind revived player.");
+            return;
+        }
+
         Debug.Log("Player died.");
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.ReturnToMainMenuAfterDeath();
     }
 }

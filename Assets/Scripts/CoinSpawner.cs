@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class CoinSpawner : MonoBehaviour
 {
@@ -37,6 +38,12 @@ public class CoinSpawner : MonoBehaviour
     public void SpawnCoins(int horizontalDirection)
     {
         int count = Random.Range(minCoins, maxCoins + 1);
+
+        if (GameManager.Instance.HasPerk(PerkType.DoubleCoins))
+        {
+            count *= 2;
+        }
+
         Vector2 spawnPosition = (Vector2)transform.position + spawnOffset;
 
         for (int i = 0; i < count; i++)
