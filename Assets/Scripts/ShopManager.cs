@@ -12,6 +12,7 @@ public class ShopManager : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private Button[] shopButtons;
     [SerializeField] private TMP_Text[] shopButtonTexts;
+    [SerializeField] private TMP_Text[] shopTextInButtons;
 
     private ShopItem[] currentOffers = new ShopItem[3];
 
@@ -197,8 +198,10 @@ public class ShopManager : MonoBehaviour
         int cost = GetCurrentCost(item);
 
         shopButtonTexts[index].text =
-            $"{item.itemName}\n" +
             $"{item.description}\n" +
             $"Cost: {cost}";
+
+        shopTextInButtons[index].text =
+            $"{item.itemName}\n";
     }
 }
