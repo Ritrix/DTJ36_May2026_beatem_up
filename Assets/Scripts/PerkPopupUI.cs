@@ -68,6 +68,15 @@ public class PerkPopupUI : MonoBehaviour
 
         GameManager.Instance.EquipPerk(currentPerk, slotIndex);
 
+        EquippedPerksDisplay[] displays = FindObjectsByType<EquippedPerksDisplay>(
+                FindObjectsSortMode.None
+            );
+
+        foreach (EquippedPerksDisplay display in displays)
+        {
+            display.SendMessage("Update", SendMessageOptions.DontRequireReceiver);
+        }
+
         currentPerk = null;
 
         ClosePopup();

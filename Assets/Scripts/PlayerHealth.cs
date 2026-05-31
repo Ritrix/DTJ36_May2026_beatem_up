@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Health))]
 public class PlayerHealth : MonoBehaviour
@@ -108,7 +109,6 @@ public class PlayerHealth : MonoBehaviour
 
         Debug.Log("Player died.");
 
-        if (GameManager.Instance != null)
-            GameManager.Instance.ReturnToMainMenuAfterDeath();
+        SceneManager.LoadScene("Death");
     }
 }
