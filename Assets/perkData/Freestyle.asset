@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4226e24a477397643b76d2233eb2e63d, type: 3}
   m_Name: Freestyle
   m_EditorClassIdentifier: Assembly-CSharp::PerkData
-  perkName: 
-  description: 
-  perkType: 0
-  weight: 10
+  perkName: Freestyle
+  description: Removes no repeated moves combo restriction
+  perkType: 11
+  weight: 3

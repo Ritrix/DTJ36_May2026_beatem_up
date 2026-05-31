@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e23578b5b21cfc946910a916c18e071c, type: 3}
-  m_Name: HalfEnemyHealthOneRound
+  m_Name: Nuke
   m_EditorClassIdentifier: Assembly-CSharp::ShopItem
-  itemName: Half enemy health
-  description: Halves the health of all enemies for the next round.
-  itemType: 4
-  baseCost: 300
+  itemName: Nuke
+  description: 'Use once any time: Kills all enemies around you.'
+  itemType: 6
+  baseCost: 180
   value: 0
-  weight: 6
+  weight: 4
   perk: {fileID: 0}
-  oneUseItemType: 0
+  oneUseItemType: 1

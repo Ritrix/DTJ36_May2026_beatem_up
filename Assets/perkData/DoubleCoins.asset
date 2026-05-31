@@ -15,4 +15,4 @@ MonoBehaviour:
   perkName: Double Coins
   description: Doubles the number of coins on successful hits.
   perkType: 0
-  weight: 10
+  weight: 11

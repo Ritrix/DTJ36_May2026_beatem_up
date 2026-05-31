@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e23578b5b21cfc946910a916c18e071c, type: 3}
-  m_Name: HalfEnemyHealthOneRound
+  m_Name: BrokenTeleport
   m_EditorClassIdentifier: Assembly-CSharp::ShopItem
-  itemName: Half enemy health
-  description: Halves the health of all enemies for the next round.
-  itemType: 4
-  baseCost: 300
+  itemName: Broken teleport
+  description: 'Use once any time: teleport to a random location'
+  itemType: 0
+  baseCost: 60
   value: 0
-  weight: 6
+  weight: 8
   perk: {fileID: 0}
-  oneUseItemType: 0
+  oneUseItemType: 5

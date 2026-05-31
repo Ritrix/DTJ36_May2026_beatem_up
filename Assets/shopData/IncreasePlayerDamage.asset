@@ -15,7 +15,8 @@ MonoBehaviour:
   itemName: Increase Damage
   description: Increases the amount of damage a player inflicts by 3
   itemType: 2
-  baseCost: 75
+  baseCost: 100
   value: 3
-  weight: 10
+  weight: 8
   perk: {fileID: 0}
+  oneUseItemType: 0

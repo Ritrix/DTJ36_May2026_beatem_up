@@ -15,7 +15,8 @@ MonoBehaviour:
   itemName: Increase Health
   description: Increases players maximum health by 20.
   itemType: 0
-  baseCost: 50
+  baseCost: 80
   value: 20
   weight: 10
   perk: {fileID: 0}
+  oneUseItemType: 0
